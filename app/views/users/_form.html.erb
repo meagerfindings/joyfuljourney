@@ -1,0 +1,47 @@
+<%= form_with model: @user do |form| %>
+  <div id="user-edit-details">
+    <div>
+      <%= form.label :first_name %><br>
+      <%= form.text_field :first_name %>
+      <% @user.errors.full_messages_for(:first_name).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :middle_name %><br>
+      <%= form.text_field :middle_name %>
+      <% @user.errors.full_messages_for(:middle_name).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :last_name %><br>
+      <%= form.text_field :last_name %>
+      <% @user.errors.full_messages_for(:last_name).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :nickname %><br>
+      <%= form.text_field :nickname %>
+      <% @user.errors.full_messages_for(:nickname).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :birthdate %><br>
+      <%= form.date_field :birthdate %>
+      <% @user.errors.full_messages_for(:birthdate).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.submit %>
+    </div>
+  </div>
+<% end %>
