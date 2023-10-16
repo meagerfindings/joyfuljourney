@@ -6,7 +6,8 @@
     <li id="post-<%= post.id %>">
       <%= link_to post.title, post %>
       <br/>
-      <p><%=post.body %></p>
+      <p><%= post.body %></p>
+      <p>by: <%= post.user.name %></p>
     </li>
   <% end %>
 </ul>

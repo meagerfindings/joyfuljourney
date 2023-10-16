@@ -15,12 +15,14 @@ RSpec.describe "Posts Index Page", type: :feature do
       expect(page).to have_content(post_1.title)
       expect(page).to have_content(post_1.body)
       expect(page).to have_link(post_1.title, href: post_path(post_1))
+      expect(page).to have_content("by: #{user_1.name}")
     end
 
     within("#post-#{post_2.id}") do
       expect(page).to have_content(post_2.title)
       expect(page).to have_content(post_2.body)
       expect(page).to have_link(post_2.title, href: post_path(post_2))
+      expect(page).to have_content("by: #{user_2.name}")
     end
   end
 
