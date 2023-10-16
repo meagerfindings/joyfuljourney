@@ -23,4 +23,10 @@ RSpec.describe "Posts Index Page", type: :feature do
       expect(page).to have_link(post_2.title, href: post_path(post_2))
     end
   end
+
+  it "has a link to create new posts" do
+    visit 'posts'
+    expect(page).to have_link('New Memory', href: new_post_path)
+    click_link 'New Memory'
+  end
 end
