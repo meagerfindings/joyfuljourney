@@ -4,6 +4,8 @@
   <% @posts.each do |post| %>
     <li>
       <%= link_to post.title, post %>
+      <br/>
+      <p><%=post.body %></p>
     </li>
   <% end %>
 </ul>
