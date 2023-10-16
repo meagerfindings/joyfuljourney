@@ -2,7 +2,7 @@
 
 <ul>
   <% @posts.each do |post| %>
-    <li>
+    <li id="post-<%= post.id %>">
       <%= link_to post.title, post %>
       <br/>
       <p><%=post.body %></p>
