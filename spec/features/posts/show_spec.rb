@@ -11,6 +11,7 @@ RSpec.describe "Posts Show Page", type: :feature do
       expect(page).to have_content(post.title)
     end
 
+    expect(page).to have_content("by: #{user.name}")
     expect(page).to have_content(post.body)
     expect(page).to have_link("Edit", href: edit_post_path(post))
     expect(page).to have_link("Destroy", href: post_path(post))
