@@ -1,8 +1,9 @@
 <h1><%= @post.title %></h1>
 
-<i>by: <%= @post.user.name %></i>
-
-<p><%= @post.body %></p>
+<div id=post-details>
+  <i>by: <%= @post.user.name %></i>
+  <p><%= @post.body %></p>
+</div>
 
 <ul>
   <li><%= link_to "Edit", edit_post_path(@post) %></li>
