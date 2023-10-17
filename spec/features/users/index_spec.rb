@@ -41,4 +41,13 @@ RSpec.describe "Users Index Page", type: :feature do
     expect(users.first).to have_content(user_2.name)
     expect(users.last).to have_content(user_1.name)
   end
+
+  it "has a link to create new users" do
+    visit '/users'
+
+    expect(page).to have_link('Create User', href: '/users/new')
+    click_link 'Create User'
+
+    expect(page).to have_current_path('/users/new')
+  end
 end

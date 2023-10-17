@@ -52,7 +52,7 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
     @post.destroy
 
-    redirect_to root_path, status: :see_other
+    redirect_to Post, status: :see_other
   end
 
   private
