@@ -4,7 +4,8 @@ RSpec.describe "Users Index Page", type: :feature do
   let(:user_1) { User.create(first_name: "Bart", last_name: "Simpson", birthdate: "April 1, 1990") }
   let(:user_2) { User.create(first_name: "Sideshow", last_name: "Bob", birthdate: "January 1, 1960") }
 
-  before do
+  before(:each) do
+    DatabaseCleaner.clean_with(:truncation)
     user_1.touch
     user_2.touch
   end

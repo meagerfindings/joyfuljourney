@@ -4,6 +4,10 @@ RSpec.describe "Posts Show Page", type: :feature do
   let(:user) { User.create(first_name: "Elon", last_name: "Musk", birthdate: "June 28, 1971") }
   let(:post) { user.post.create(title: "Punny", body: "For the chemistry nerds: “Technically, alcohol is a solution.") }
 
+  before(:each) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
   it "shows a specific post's details" do
     visit "posts/#{post.id}"
 

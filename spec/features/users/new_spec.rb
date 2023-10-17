@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe "New User Page", type: :feature do
+  before(:each) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
   it "allows the creation of a new user" do
     new_user = {
       first_name: "Joseph",

@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe "User Show Page", type: :feature do
+  before(:each) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
   it "displays given users complete information" do
     user_1 = User.create(first_name: "William", middle_name: "Unknown", last_name: "Ramos", birthdate: "January 1, 1993", nickname: "Sunshine")
 
