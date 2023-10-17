@@ -33,4 +33,12 @@ RSpec.describe "Users Index Page", type: :feature do
       expect(page).to have_link('Edit', href: edit_user_path(user_2.id))
     end
   end
+
+  it "displays users from most recently created to oldest" do
+    visit "/users"
+
+    users = page.all('li')
+    expect(users.first).to have_content(user_2.name)
+    expect(users.last).to have_content(user_1.name)
+  end
 end
