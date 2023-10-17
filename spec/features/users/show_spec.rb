@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'random/formatter'
 
 RSpec.describe "User Show Page", type: :feature do
   before(:each) do
@@ -39,10 +40,15 @@ RSpec.describe "User Show Page", type: :feature do
   end
 
   it "shows user's post count" do
+    random_number = Random.new.random_number(10)
+    random_number.times do |index|
+      user.post.create(title: index, body: "Take me back to Eden, Take me back to Eden!!!")
+    end
+
     visit "/users/#{user.id}"
 
     within("#post-count") do
-      expect(page).to have_content("Posts: #{user.post_count}")
+      expect(page).to have_content("Posts: #{random_number}")
     end
   end
 end
