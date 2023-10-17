@@ -37,4 +37,12 @@ RSpec.describe "User Show Page", type: :feature do
     click_link 'Edit User'
     expect(page).to have_current_path("/users/#{user.id}/edit")
   end
+
+  it "shows user's post count" do
+    visit "/users/#{user.id}"
+
+    within("#post-count") do
+      expect(page).to have_content("Posts: #{user.post_count}")
+    end
+  end
 end

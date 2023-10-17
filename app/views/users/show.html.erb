@@ -7,6 +7,10 @@
   <p><%= @user.birthdate %></p>
 </div>
 
+<div id="post-count">
+  <p>Posts: <%= @user.post_count %></p>
+</div>
+
 <div>
   <%= link_to 'Edit User', edit_user_path(@user) %>
 </div>
