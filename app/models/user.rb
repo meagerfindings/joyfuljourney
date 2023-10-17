@@ -9,5 +9,9 @@ class User < ApplicationRecord
   def name
     "#{first_name} #{last_name}"
   end
+
+  def post_count
+    Post.where(user_id: id).count
+  end
 end
 

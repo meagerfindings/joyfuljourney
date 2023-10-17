@@ -6,6 +6,10 @@ RSpec.describe "User Edit Page", type: :feature do
                 birthdate: "January 1, 1993", nickname: "Sunshine")
   }
 
+  before(:each) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
   it "allows modification of existing user's information" do
     edited_user = {
       first_name: "George",
