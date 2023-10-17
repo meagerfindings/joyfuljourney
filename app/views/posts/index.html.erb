@@ -1,9 +1,13 @@
 <h1>Posts</h1>
+<%= link_to "New Memory", new_post_path %>
 
 <ul>
   <% @posts.each do |post| %>
-    <li>
+    <li id="post-<%= post.id %>">
       <%= link_to post.title, post %>
+      <br/>
+      <p><%= post.body %></p>
+      <p>by: <%= post.user.name %></p>
     </li>
   <% end %>
 </ul>

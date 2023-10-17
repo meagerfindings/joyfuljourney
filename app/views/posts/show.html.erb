@@ -1,5 +1,7 @@
 <h1><%= @post.title %></h1>
 
+<i>by: <%= @post.user.name %></i>
+
 <p><%= @post.body %></p>
 
 <ul>
@@ -9,3 +11,5 @@
                     turbo_confirm: "Are you sure you want to delete '#{@post.title}'?"
                   } %></li>
 </ul>
+
+<%= link_to 'Back to Posts', '/posts' %>

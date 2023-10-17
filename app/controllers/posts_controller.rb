@@ -13,7 +13,14 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(post_params)
+
+    # TODO: Remove the hardcoding of user_id once authentication is added
+    modified_params = post_params
+    unless modified_params[:user_id].present?
+      modified_params[:user_id] = User.last.id
+    end
+
+    @post = Post.new(modified_params)
 
     if @post.save
       redirect_to @post
