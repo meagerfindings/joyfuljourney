@@ -8,7 +8,7 @@
 </div>
 
 <div id="post-count">
-  <p>Posts: <%= @user.post_count %></p>
+  <%= link_to "#{@user.post_count} Posts", "/users/#{@user.id}/posts" %>
 </div>
 
 <div>

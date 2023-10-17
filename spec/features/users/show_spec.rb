@@ -39,16 +39,21 @@ RSpec.describe "User Show Page", type: :feature do
     expect(page).to have_current_path("/users/#{user.id}/edit")
   end
 
-  it "shows user's post count" do
+  it "shows the user's post count as a link to the user's posts" do
     random_number = Random.new.random_number(10)
     random_number.times do |index|
       user.post.create(title: index, body: "Take me back to Eden, Take me back to Eden!!!")
     end
 
+    link_text = "#{random_number} Posts"
+
     visit "/users/#{user.id}"
 
-    within("#post-count") do
-      expect(page).to have_content("Posts: #{random_number}")
-    end
+     within("#post-count") do
+       expect(page).to have_link(link_text, href: "/users/#{user.id}/posts" )
+       click_link link_text
+     end
+
+    expect(page).to have_current_path("/users/#{user.id}/posts")
   end
 end
