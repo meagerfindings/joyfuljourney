@@ -35,11 +35,4 @@ RSpec.describe PostsController, type: :controller do
       expect(response).to have_http_status(422)
     end
   end
-
-  describe 'Update' do
-    xit 'updates the post' do
-      # let post
-    end
-    xit 'returns an error'
-  end
 end
