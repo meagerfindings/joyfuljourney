@@ -1,4 +1,8 @@
-<h1>Posts</h1>
+<% is_user_post_index = @user %>
+<% index_header_string = is_user_post_index ? "#{@user.name}'s Posts" : "All Posts" %>
+
+<h1><%= index_header_string %></h1>
+
 <%= link_to "New Memory", new_post_path %>
 
 <ul>
