@@ -27,6 +27,7 @@ RSpec.describe "Navbar Partial", type: :feature do
 
       within("#navbar") do
         expect(page). to have_link("Posts", href: posts_path)
+        expect(page). to have_link("Users", href: users_path)
       end
     end
   end
