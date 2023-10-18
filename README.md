@@ -1,24 +1,3 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+The "Joyful Journey" app is a Ruby on Rails 7 web application designed to help parents and families capture and cherish memories of their children. It allows users to create "posts" that include titles, descriptions, and optional multimedia files like audio and video. The app also provides a feature for users to record who was present during these memories, including parents, children, and even grandparents. Users can organize these memories and create a shared family experience, and they can maintain family relationships and roles such as parent-child and grandparent-child associations.
