@@ -18,7 +18,7 @@ RSpec.describe "Posts Show Page", type: :feature do
     expect(page).to have_content("by: #{user.name}")
     expect(page).to have_content(post.body)
     expect(page).to have_link("Edit", href: edit_post_path(post))
-    expect(page).to have_link("Destroy", href: post_path(post))
+    expect(page).to have_link("Delete", href: post_path(post))
   end
 
   it "has a link back to posts index page" do
@@ -26,5 +26,14 @@ RSpec.describe "Posts Show Page", type: :feature do
 
     click_link 'Back to Posts'
     expect(page).to have_current_path('/posts')
+  end
+
+  it "has a link to delete the post" do
+    visit "posts/#{post.id}"
+
+    click_link 'Delete Post'
+
+    expect(page).to have_current_path('/posts')
+    expect(page).to_not have_content(post.title)
   end
 end
