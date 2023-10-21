@@ -44,6 +44,22 @@ class UsersController < ApplicationController
     redirect_to User
   end
 
+  def login_form
+  end
+
+  def login
+    user = User.find_by(username: params[:username])
+
+    if user.authenticate(params[:password])
+      flash[:success] = "Welcome, #{user.username}!"
+      redirect_to root_path
+    else
+      flash[:error] = 'Sorry, your username or password did not match what we have on record.'
+      render :login_form
+    end
+  end
+
+
   private
   def user_params
     permitted_params = [:first_name, :last_name, :middle_name, :birthdate, :nickname, :claimed]

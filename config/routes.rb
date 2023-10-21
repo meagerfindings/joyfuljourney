@@ -8,4 +8,7 @@ Rails.application.routes.draw do
   resources :users do
     resources :posts, only: [:index]
   end
+
+  get "/login", to: "users#login_form"
+  post "/login", to: "users#login"
 end
