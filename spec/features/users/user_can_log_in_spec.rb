@@ -10,7 +10,7 @@ RSpec.describe "Logging In" do
   it "can log in with valid credentials" do
     visit root_path
 
-    click_on "I already have an account"
+    click_on "Log In"
 
     expect(current_path).to eq(login_path)
 
