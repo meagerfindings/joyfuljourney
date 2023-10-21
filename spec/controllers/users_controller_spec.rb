@@ -26,6 +26,19 @@ RSpec.describe UsersController, type: :controller do
       expect(response).to be_successful
       expect(response).to render_template(:new)
     end
+
+    context 'with claimed param' do
+      it 'sets the claimed attribute based on params' do
+        get :new, params: { claimed: 'true' }
+
+        expect(assigns(:user).claimed).to be true
+      end
+
+      it 'sets the claimed attribute to false if not specified in params' do
+        get :new
+        expect(assigns(:user).claimed).to be false
+      end
+    end
   end
 
   describe 'POST #create' do
@@ -47,6 +60,53 @@ RSpec.describe UsersController, type: :controller do
         post :create, params: { user: { first_name: "Amos", birthdate: "July 4, 3315" } }
         expect(response).to have_http_status(422)
         expect(response).to render_template(:new)
+      end
+    end
+
+    context 'with an unclaimed user' do
+      context 'without username' do
+        it 'creates a new user' do
+          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: false } }
+          expect(response).to redirect_to user_path(id: User.last)
+          expect(User.last.username).to_not be_nil
+        end
+
+      end
+      context 'without password' do
+        it 'creates a new user' do
+          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: false } }
+          expect(response).to redirect_to user_path(id: User.last)
+        end
+      end
+    end
+
+    context 'with a claimed user' do
+      context 'with a username and password do'
+        it 'creates a new user and redirects to root path' do
+          username = "willramos"
+
+          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: true, username: username, password: "pray to imitation gods" } }
+
+          expect(response).to redirect_to root_path
+          expect(User.last.username).to eq(username)
+        end
+
+      context 'without username' do
+        it 'does not create a new user' do
+          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: true, password: "pray to imitation gods" } }
+
+          expect(response).to have_http_status(422)
+          expect(response).to render_template(:new)
+        end
+
+      end
+      context 'without password' do
+        it 'does not create a new user' do
+          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: true, username: "WillRAMOS" } }
+
+          expect(response).to have_http_status(422)
+          expect(response).to render_template(:new)
+        end
       end
     end
   end
