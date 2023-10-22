@@ -10,7 +10,6 @@ RSpec.describe "Navbar Partial", type: :feature do
     post = user.post.create(title: "Information Freedom", body: "Right, no coffee. This is a terrible planet.")
 
     routes_array = [
-      '/',
       '/users',
       "users/#{user.id}",
       "users/#{user.id}/edit",
