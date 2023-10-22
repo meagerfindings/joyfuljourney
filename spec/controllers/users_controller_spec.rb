@@ -164,4 +164,41 @@ RSpec.describe UsersController, type: :controller do
       expect(response).to redirect_to(users_path)
     end
   end
+
+  describe 'POST #login' do
+    let(:user) { create(:claimed_user, password: 'password') }
+
+    context 'with valid login credentials' do
+      it 'logs in the user and redirects to the root path' do
+        post :login, params: { username: user.username, password: 'password' }
+        expect(session[:user_id]).to eq(user.id)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:success]).to eq("Welcome, #{user.name}!")
+      end
+    end
+
+    context 'with invalid login credentials' do
+      it 'does not log in the user and renders the login_form' do
+        post :login, params: { username: 'invalid_user', password: 'invalid_password' }
+        expect(session[:user_id]).to be_nil
+        expect(response).to render_template(:login_form)
+        expect(flash[:error]).to eq('Sorry, your username or password did not match what we have on record.')
+      end
+    end
+  end
+
+  describe 'POST #logout' do
+    let(:user) { create(:claimed_user) }
+
+    before do
+      session[:user_id] = user.id
+    end
+
+    it 'logs out the user and redirects to the root path' do
+      expect(session[:user_id]).to eq(user.id)
+      post :logout
+      expect(session[:user_id]).to be_nil
+      expect(response).to redirect_to(root_path)
+    end
+  end
 end

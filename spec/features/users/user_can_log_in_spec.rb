@@ -10,18 +10,22 @@ RSpec.describe "Logging In" do
   it "can log in with valid credentials" do
     visit root_path
 
-    click_on "Log In"
+    within("#welcome-session-options") do
+      click_on "Log In"
+    end
 
     expect(current_path).to eq(login_path)
 
     fill_in :username, with: user.username
     fill_in :password, with: user.password
 
-    click_on "Log In"
+    within("#login-form") do
+      click_on "Log In"
+    end
 
     expect(current_path).to eq(root_path)
 
-    expect(page).to have_content("Welcome, #{user.username}")
+    expect(page).to have_content("Welcome, #{user.name}")
   end
 
   it "cannot log in with bad credentials" do
@@ -30,7 +34,9 @@ RSpec.describe "Logging In" do
     fill_in :username, with: user.username
     fill_in :password, with: "incorrect password"
 
-    click_on "Log In"
+    within("#login-form") do
+      click_on "Log In"
+    end
 
     expect(current_path).to eq(login_path)
 
@@ -46,7 +52,9 @@ RSpec.describe "Logging In" do
       fill_in :username, with: user.username
       fill_in :password, with: user.password
 
-      click_on "Log In"
+      within("#login-form") do
+        click_on "Log In"
+      end
 
       expect(current_path).to eq(root_path)
       expect(page).to have_content("Log Out")
@@ -60,7 +68,9 @@ RSpec.describe "Logging In" do
       fill_in :username, with: user.username
       fill_in :password, with: user.password
 
-      click_on "Log In"
+      within("#login-form") do
+        click_on "Log In"
+      end
 
       expect(current_path).to eq(root_path)
       expect(page).to_not have_content("Sign Up")
@@ -79,5 +89,55 @@ RSpec.describe "Logging In" do
       expect(page).to have_content("Sign Up")
       expect(page).to have_content("Log In")
     end
+  end
+
+  it 'user can log out from welcome page' do
+    visit login_path
+
+    expect(current_path).to eq(login_path)
+
+    fill_in :username, with: user.username
+    fill_in :password, with: user.password
+
+    within("#login-form") do
+      click_on "Log In"
+    end
+
+    expect(page).to_not have_content("Sign Up")
+    expect(page).to_not have_content("Log In")
+
+    within("#welcome-session-options") do
+      click_on "Log Out"
+    end
+
+    expect(page).to have_content("Sign Up")
+    expect(page).to have_content("Log In")
+    expect(current_path).to eq(root_path)
+  end
+
+  it 'user can log out from any page' do
+    visit login_path
+
+    expect(current_path).to eq(login_path)
+
+    fill_in :username, with: user.username
+    fill_in :password, with: user.password
+
+    within("#login-form") do
+      click_on "Log In"
+    end
+
+    visit posts_path
+
+    expect(page).to_not have_content("Sign Up")
+    expect(page).to_not have_content("Log In")
+
+    within("#session-options") do
+      click_on "Log Out"
+    end
+
+    expect(page).to have_content("Sign Up")
+    expect(page).to have_content("Log In")
+    expect(current_path).to eq(root_path)
   end
 end

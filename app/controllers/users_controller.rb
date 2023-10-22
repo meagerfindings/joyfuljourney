@@ -51,14 +51,19 @@ class UsersController < ApplicationController
   def login
     user = User.find_by(username: params[:username])
 
-    if user.authenticate(params[:password])
+    if user&.authenticate(params[:password])
       session[:user_id] = user.id
-      flash[:success] = "Welcome, #{user.username}!"
+      flash[:success] = "Welcome, #{user.name}!"
       redirect_to root_path
     else
       flash[:error] = 'Sorry, your username or password did not match what we have on record.'
       render :login_form
     end
+  end
+
+  def logout
+    session.delete :user_id
+    redirect_to root_path
   end
 
 
