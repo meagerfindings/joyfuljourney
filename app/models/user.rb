@@ -14,6 +14,8 @@ class User < ApplicationRecord
   has_many :post
   has_secure_password
 
+  enum role: %w[default manager admin]
+
   def name
     "#{first_name} #{last_name}"
   end
