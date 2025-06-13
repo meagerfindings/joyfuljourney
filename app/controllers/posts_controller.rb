@@ -1,5 +1,10 @@
 # frozen_string_literal: true
+
 class PostsController < ApplicationController
+  before_action :require_login, except: %i[index show]
+  before_action :set_post, only: %i[show edit update destroy]
+  before_action :authorize_post_action, only: %i[edit update destroy]
+
   def index
     if params[:user_id]
       @user = User.find(params[:user_id])
@@ -9,23 +14,15 @@ class PostsController < ApplicationController
     end
   end
 
-  def show
-    @post = Post.find(params[:id])
-  end
+  def show; end
 
   def new
     @post = Post.new
   end
 
   def create
-
-    # TODO: Remove the hardcoding of user_id once authentication is added
-    modified_params = post_params
-    unless modified_params[:user_id].present?
-      modified_params[:user_id] = User.last.id
-    end
-
-    @post = Post.new(modified_params)
+    @post = Post.new(post_params)
+    @post.user = current_user
 
     if @post.save
       redirect_to @post
@@ -34,13 +31,9 @@ class PostsController < ApplicationController
     end
   end
 
-  def edit
-    @post = Post.find(params[:id])
-  end
+  def edit; end
 
   def update
-    @post = Post.find(params[:id])
-
     if @post.update(post_params)
       redirect_to @post
     else
@@ -49,14 +42,21 @@ class PostsController < ApplicationController
   end
 
   def destroy
-    @post = Post.find(params[:id])
     @post.destroy
-
-    redirect_to Post, status: :see_other
+    redirect_to posts_path, status: :see_other
   end
 
   private
+
+  def set_post
+    @post = Post.find(params[:id])
+  end
+
+  def authorize_post_action
+    authorize_post_access(@post)
+  end
+
   def post_params
-    params.require(:post).permit(:title, :body, :user_id)
+    params.require(:post).permit(:title, :body)
   end
 end
