@@ -42,7 +42,7 @@ RSpec.describe "User Show Page", type: :feature do
   it "shows the user's post count as a link to the user's posts" do
     random_number = Random.new.random_number(10)
     random_number.times do |index|
-      user.post.create(title: index, body: "Take me back to Eden, Take me back to Eden!!!")
+      user.posts.create(title: index, body: "Take me back to Eden, Take me back to Eden!!!")
     end
 
     link_text = "#{random_number} Posts"

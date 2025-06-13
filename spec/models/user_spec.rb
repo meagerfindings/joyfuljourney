@@ -33,7 +33,7 @@ RSpec.describe User, type: :model do
     it "returns the number of the user's posts" do
       random_number = Random.new.random_number(10)
       random_number.times do |index|
-        user.post.create(title: index, body: "I see my days unfold, under the impossible")
+        user.posts.create(title: index, body: "I see my days unfold, under the impossible")
       end
 
       expect(user.post_count).to eq(random_number)

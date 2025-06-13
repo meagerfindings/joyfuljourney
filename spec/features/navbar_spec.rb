@@ -7,7 +7,7 @@ RSpec.describe "Navbar Partial", type: :feature do
 
   it "shows on 'every' page" do
     user = User.create(first_name: "James", last_name: "Holden", birthdate: "August 8, 3333")
-    post = user.post.create(title: "Information Freedom", body: "Right, no coffee. This is a terrible planet.")
+    post = user.posts.create(title: "Information Freedom", body: "Right, no coffee. This is a terrible planet.")
 
     routes_array = [
       '/users',
