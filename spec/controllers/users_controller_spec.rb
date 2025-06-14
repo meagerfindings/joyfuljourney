@@ -3,12 +3,17 @@ require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
   let(:user) { User.create(first_name: "Amos", last_name: "Burton", birthdate: "July 4, 3315") }
+  let(:manager_user) { create(:claimed_user, role: :manager) }
 
   describe 'GET #index' do
-    it 'renders index' do
-      get :index
-      expect(response).to be_successful
-      expect(response).to render_template(:index)
+    context 'when logged in as manager' do
+      before { session[:user_id] = manager_user.id }
+      
+      it 'renders index' do
+        get :index
+        expect(response).to be_successful
+        expect(response).to render_template(:index)
+      end
     end
   end
 

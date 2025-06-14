@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :require_login, except: %i[new create login_form login]
-  before_action :set_user, only: %i[show edit update destroy]
-  before_action :authorize_user_action, only: %i[show edit update destroy]
   before_action :require_manager_or_admin, only: %i[index destroy]
+  before_action :set_user, only: %i[show edit update destroy]
+  before_action :authorize_user_action, only: %i[show edit update]
 
   def index
     @users = User.all.order(created_at: :desc)
