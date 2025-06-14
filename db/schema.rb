@@ -10,32 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_22_115600) do
+ActiveRecord::Schema[7.0].define(version: 20_231_022_115_600) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension 'plpgsql'
 
-  create_table "posts", force: :cascade do |t|
-    t.string "title"
-    t.text "body"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_posts_on_user_id"
+  create_table 'posts', force: :cascade do |t|
+    t.string 'title'
+    t.text 'body'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.bigint 'user_id', null: false
+    t.index ['user_id'], name: 'index_posts_on_user_id'
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "first_name"
-    t.string "middle_name"
-    t.string "last_name"
-    t.string "nickname"
-    t.date "birthdate"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "username"
-    t.string "password_digest"
-    t.boolean "claimed", default: false
-    t.integer "role", default: 0
+  create_table 'users', force: :cascade do |t|
+    t.string 'first_name'
+    t.string 'middle_name'
+    t.string 'last_name'
+    t.string 'nickname'
+    t.date 'birthdate'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.string 'username'
+    t.string 'password_digest'
+    t.boolean 'claimed', default: false
+    t.integer 'role', default: 0
   end
 
-  add_foreign_key "posts", "users"
+  add_foreign_key 'posts', 'users'
 end

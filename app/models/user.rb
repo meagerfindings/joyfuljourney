@@ -1,8 +1,8 @@
 class User < ApplicationRecord
   attr_reader :name
 
-  before_validation :set_random_password, on: :create, unless: [:claimed, :password]
-  before_validation :set_random_username, on: :create, unless: [:claimed, :username]
+  before_validation :set_random_password, on: :create, unless: %i[claimed password]
+  before_validation :set_random_username, on: :create, unless: %i[claimed username]
 
   validates :first_name, presence: true
   validates :last_name, presence: true
@@ -36,11 +36,10 @@ class User < ApplicationRecord
   end
 
   def random_value
-    SecureRandom.base64(100)[0,72]
+    SecureRandom.base64(100)[0, 72]
   end
 
   def downcase_username
     self.username = username.downcase if username.present?
   end
 end
-
