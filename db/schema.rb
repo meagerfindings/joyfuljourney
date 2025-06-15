@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_15_185758) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_15_191418) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,23 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_15_185758) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_families_on_name"
+  end
+
+  create_table "milestones", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.date "milestone_date", null: false
+    t.string "milestone_type", null: false
+    t.string "milestoneable_type", null: false
+    t.bigint "milestoneable_id", null: false
+    t.bigint "created_by_user_id", null: false
+    t.boolean "is_private", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["milestone_date"], name: "index_milestones_on_milestone_date"
+    t.index ["milestone_type"], name: "index_milestones_on_milestone_type"
+    t.index ["milestoneable_type", "milestoneable_id"], name: "index_milestones_on_milestoneable"
+    t.index ["milestoneable_type", "milestoneable_id"], name: "index_milestones_on_milestoneable_type_and_milestoneable_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -54,6 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_15_185758) do
     t.index ["family_id"], name: "index_users_on_family_id"
   end
 
+  add_foreign_key "milestones", "users", column: "created_by_user_id"
   add_foreign_key "posts", "users"
   add_foreign_key "users", "families"
 end

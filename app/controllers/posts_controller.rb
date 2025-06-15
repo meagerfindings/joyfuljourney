@@ -25,7 +25,7 @@ class PostsController < ApplicationController
     @post.user = current_user
 
     if validate_tagged_users && @post.save
-      redirect_to @post
+      redirect_to @post, notice: 'Memory was successfully created! 🎉'
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class PostsController < ApplicationController
 
   def update
     if validate_tagged_users && @post.update(post_params)
-      redirect_to @post
+      redirect_to @post, notice: 'Memory was successfully updated! ✨'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -43,7 +43,7 @@ class PostsController < ApplicationController
 
   def destroy
     @post.destroy
-    redirect_to posts_path, status: :see_other
+    redirect_to posts_path, notice: 'Memory was successfully deleted.', status: :see_other
   end
 
   private
