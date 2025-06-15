@@ -69,6 +69,47 @@
             <div class="post-content">
               <p class="lead"><%= simple_format(@post.body) %></p>
             </div>
+            
+            <% if @post.milestones.any? %>
+              <div class="border-top pt-4 mt-4">
+                <h6 class="text-muted mb-3">
+                  <i class="bi bi-trophy me-1"></i>
+                  Related Milestones:
+                </h6>
+                <div class="row g-3">
+                  <% @post.milestones.select { |m| m.visible_to?(current_user) }.each do |milestone| %>
+                    <div class="col-md-6">
+                      <div class="card border-0 bg-success bg-opacity-5 h-100">
+                        <div class="card-body p-3">
+                          <div class="d-flex align-items-start">
+                            <div class="badge bg-success text-white me-2 mt-1">
+                              <i class="bi bi-trophy"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                              <h6 class="card-title mb-1">
+                                <%= link_to milestone.title, milestone, class: "text-decoration-none text-success fw-bold" %>
+                              </h6>
+                              <div class="small text-muted mb-2">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                <%= milestone.milestone_date.strftime("%b %d, %Y") %>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary ms-2">
+                                  <%= milestone.milestone_type.humanize %>
+                                </span>
+                              </div>
+                              <% if milestone.description.present? %>
+                                <p class="card-text small text-muted">
+                                  <%= truncate(milestone.description, length: 100) %>
+                                </p>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           </div>
           
           <div class="card-footer bg-light border-0">
