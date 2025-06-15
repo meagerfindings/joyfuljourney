@@ -1,0 +1,95 @@
+<%= form_with model: [@milestoneable, @milestone].compact do |form| %>
+  <div class="milestone-form">
+    <div>
+      <%= form.label :title, "Milestone Title" %><br>
+      <%= form.text_field :title, placeholder: "e.g., First Steps, Graduation, Wedding" %>
+      <% @milestone.errors.full_messages_for(:title).each do |message| %>
+        <div class="error"><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :milestone_date, "Date" %><br>
+      <%= form.date_field :milestone_date %>
+      <% @milestone.errors.full_messages_for(:milestone_date).each do |message| %>
+        <div class="error"><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :milestone_type, "Type" %><br>
+      <%= form.select :milestone_type, 
+                      options_for_select(@milestone_types.map { |type| [type.humanize, type] }, @milestone.milestone_type),
+                      { prompt: "Select milestone type" },
+                      { class: "form-select" } %>
+      <% @milestone.errors.full_messages_for(:milestone_type).each do |message| %>
+        <div class="error"><%= message %></div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :description, "Description (optional)" %><br>
+      <%= form.text_area :description, rows: 4, placeholder: "Add more details about this milestone..." %>
+      <% @milestone.errors.full_messages_for(:description).each do |message| %>
+        <div class="error"><%= message %></div>
+      <% end %>
+    </div>
+
+    <% unless @milestoneable %>
+      <div>
+        <%= form.label :milestoneable_type, "Milestone For" %><br>
+        <%= form.select :milestoneable_type, 
+                        options_for_select([
+                          ['Myself', 'User'],
+                          ['My Family', 'Family'],
+                          ['A Post', 'Post']
+                        ], @milestone.milestoneable_type),
+                        { prompt: "Select what this milestone is for" },
+                        { class: "form-select", onchange: "updateMilestoneableOptions(this.value)" } %>
+      </div>
+
+      <div id="milestoneable-id-field" style="<%= 'display: none;' unless @milestone.milestoneable_type %>">
+        <%= form.label :milestoneable_id, "Select Specific Item" %><br>
+        <%= form.select :milestoneable_id, 
+                        milestone_options_for_type(@milestone.milestoneable_type, current_user),
+                        { prompt: "Select..." },
+                        { class: "form-select" } %>
+      </div>
+    <% else %>
+      <%= form.hidden_field :milestoneable_type, value: @milestoneable.class.name %>
+      <%= form.hidden_field :milestoneable_id, value: @milestoneable.id %>
+    <% end %>
+
+    <div>
+      <%= form.check_box :is_private %>
+      <%= form.label :is_private, "Private milestone (only visible to family)" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", @milestone.persisted? ? @milestone : milestones_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<% unless @milestoneable %>
+<script>
+function updateMilestoneableOptions(type) {
+  const field = document.getElementById('milestoneable-id-field');
+  const select = field.querySelector('select');
+  
+  if (!type) {
+    field.style.display = 'none';
+    return;
+  }
+  
+  field.style.display = 'block';
+  
+  // Clear existing options
+  select.innerHTML = '<option value="">Select...</option>';
+  
+  // This would need to be implemented with AJAX or pre-loaded data
+  // For now, we'll show the field and let the form validation handle it
+}
+</script>
+<% end %>

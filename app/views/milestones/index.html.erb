@@ -1,0 +1,47 @@
+<% page_title = if @milestoneable
+  case @milestoneable
+  when User
+    "#{@milestoneable.name}'s Milestones"
+  when Family
+    "#{@milestoneable.name} Family Milestones"
+  when Post
+    "Milestones for \"#{@milestoneable.title}\""
+  end
+else
+  "All Milestones"
+end %>
+
+<h1><%= page_title %></h1>
+
+<%= link_to "New Milestone", @milestoneable ? new_polymorphic_path([@milestoneable, :milestone]) : new_milestone_path, class: "btn btn-primary" %>
+
+<% if @milestones.any? %>
+  <ul>
+    <% @milestones.each do |milestone| %>
+      <li id="milestone-<%= milestone.id %>">
+        <h3><%= link_to milestone.title, milestone %></h3>
+        <p><strong>Date:</strong> <%= milestone.milestone_date.strftime("%B %d, %Y") %></p>
+        <p><strong>Type:</strong> <%= milestone.milestone_type_display %></p>
+        <% if milestone.description.present? %>
+          <p><%= milestone.description %></p>
+        <% end %>
+        <p><strong>For:</strong> 
+          <% case milestone.milestoneable_type %>
+          <% when 'User' %>
+            <%= milestone.milestoneable.name %>
+          <% when 'Family' %>
+            <%= milestone.milestoneable.name %> family
+          <% when 'Post' %>
+            Post "<%= milestone.milestoneable.title %>"
+          <% end %>
+        </p>
+        <p><small class="text-muted">Created by <%= milestone.created_by_user.name %></small></p>
+        <% if milestone.is_private %>
+          <span class="badge badge-warning">Private</span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No milestones found. <%= link_to "Create the first one!", @milestoneable ? new_polymorphic_path([@milestoneable, :milestone]) : new_milestone_path %>.</p>
+<% end %>

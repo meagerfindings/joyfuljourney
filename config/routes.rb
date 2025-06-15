@@ -6,8 +6,16 @@ Rails.application.routes.draw do
 
   resources :posts
   resources :families
+  resources :milestones
   resources :users do
     resources :posts, only: [:index]
+    resources :milestones, only: [:index, :show]
+  end
+  resources :families do
+    resources :milestones, only: [:index, :show]
+  end
+  resources :posts do
+    resources :milestones, only: [:index, :show]
   end
 
   get '/login', to: 'users#login_form'

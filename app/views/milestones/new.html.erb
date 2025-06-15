@@ -1,0 +1,16 @@
+<% page_title = if @milestoneable
+  case @milestoneable
+  when User
+    "New Milestone for #{@milestoneable.name}"
+  when Family
+    "New Milestone for #{@milestoneable.name} Family"
+  when Post
+    "New Milestone for \"#{@milestoneable.title}\""
+  end
+else
+  "New Milestone"
+end %>
+
+<h1><%= page_title %></h1>
+
+<%= render 'form' %>
