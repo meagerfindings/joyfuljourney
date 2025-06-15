@@ -1,16 +1,33 @@
-class WelcomeController < ApplicationController
+class TimelineController < ApplicationController
+  before_action :require_login
+
   def index
-    if current_user
-      @timeline_items = fetch_recent_timeline_items
-    end
+    @timeline_items = fetch_timeline_items
+    @filter_type = params[:filter_type] || 'all'
+    @filter_milestone_type = params[:filter_milestone_type]
+    
+    # Apply filters
+    @timeline_items = filter_by_type(@timeline_items, @filter_type)
+    @timeline_items = filter_by_milestone_type(@timeline_items, @filter_milestone_type)
+    
+    # Sort by date descending (most recent first)
+    @timeline_items = @timeline_items.sort_by { |item| item_date(item) }.reverse
+    
+    @milestone_types = Milestone::MILESTONE_TYPES
+  end
+
+  def show_truncated
+    @timeline_items = fetch_timeline_items.first(5)
+    @timeline_items = @timeline_items.sort_by { |item| item_date(item) }.reverse
+    render :truncated
   end
 
   private
 
-  def fetch_recent_timeline_items
+  def fetch_timeline_items
     items = []
     
-    # Get recent milestones
+    # Get milestones
     milestones = if current_user.family
                    visible_family_milestones
                  else
@@ -20,7 +37,7 @@ class WelcomeController < ApplicationController
     milestones = milestones.select { |milestone| milestone.visible_to?(current_user) }
     items.concat(milestones)
     
-    # Get recent posts
+    # Get posts
     posts = if current_user.family
               visible_family_posts
             else
@@ -28,9 +45,7 @@ class WelcomeController < ApplicationController
             end
     
     items.concat(posts)
-    
-    # Sort by date and limit to 5 most recent
-    items.sort_by { |item| item_date(item) }.reverse.first(5)
+    items
   end
 
   def visible_family_milestones
@@ -54,6 +69,25 @@ class WelcomeController < ApplicationController
         .where(users: { family: current_user.family })
         .where(private: false)
         .includes(:user, :tagged_users)
+  end
+
+  def filter_by_type(items, filter_type)
+    case filter_type
+    when 'posts'
+      items.select { |item| item.is_a?(Post) }
+    when 'milestones'  
+      items.select { |item| item.is_a?(Milestone) }
+    else
+      items
+    end
+  end
+
+  def filter_by_milestone_type(items, milestone_type)
+    return items unless milestone_type.present?
+    
+    items.select do |item|
+      item.is_a?(Post) || (item.is_a?(Milestone) && item.milestone_type == milestone_type)
+    end
   end
 
   def item_date(item)
