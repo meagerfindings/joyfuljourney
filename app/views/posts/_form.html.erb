@@ -28,7 +28,7 @@
         <div>
           <%= b.check_box %>
           <%= b.label do %>
-            <%= b.object.name %><%= " (#{b.object.age} years old)" if b.object.age %>
+            <%= b.object.name %><%= " (#{b.object.display_age})" if b.object.display_age %>
           <% end %>
         </div>
       <% end %>

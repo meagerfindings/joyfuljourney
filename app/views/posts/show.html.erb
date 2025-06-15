@@ -16,7 +16,7 @@
       <strong>Tagged Family Members:</strong>
       <% @post.tagged_users.each do |tagged_user| %>
         <span class="badge bg-light text-dark">
-          <%= tagged_user.name %><%= " (#{tagged_user.age} years old)" if tagged_user.age %>
+          <%= tagged_user.name %><%= " (#{tagged_user.display_age})" if tagged_user.display_age %>
         </span>
       <% end %>
     </div>
