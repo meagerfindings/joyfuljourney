@@ -13,3 +13,167 @@
  *= require_tree .
  *= require_self
  */
+
+/* Joyful Journey Custom Styles */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warm-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --shadow-soft: 0 2px 10px rgba(0,0,0,0.1);
+  --shadow-medium: 0 4px 20px rgba(0,0,0,0.12);
+  --shadow-strong: 0 8px 25px rgba(0,0,0,0.15);
+  --border-radius: 12px;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  line-height: 1.6;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+/* Enhanced Cards */
+.card {
+  border-radius: var(--border-radius);
+  border: 0;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.hover-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-strong);
+}
+
+/* Custom Buttons */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.5rem 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--primary-gradient);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Flash Messages Enhancement */
+.alert {
+  border-radius: var(--border-radius);
+  border: 0;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Navbar Enhancements */
+.navbar-brand {
+  font-size: 1.5rem;
+  background: linear-gradient(45deg, #fff, #e8f4f8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form Styling */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 2px solid #e1e5e9;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Animation for Turbo */
+[data-turbo-temporary] {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Loading States */
+.turbo-progress-bar {
+  background: var(--primary-gradient);
+  height: 3px;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .display-1 {
+    font-size: 3rem;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+}
+
+/* Badge Enhancements */
+.badge {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 0.4em 0.8em;
+}
+
+/* Memory Cards Special Styling */
+.memory-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown Improvements */
+.dropdown-menu {
+  border-radius: var(--border-radius);
+  border: 0;
+  box-shadow: var(--shadow-medium);
+}
+
+.dropdown-item {
+  border-radius: 6px;
+  margin: 2px 4px;
+}
+
+/* Welcome Page Specific */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  pointer-events: none;
+}
