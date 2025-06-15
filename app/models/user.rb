@@ -13,6 +13,7 @@ class User < ApplicationRecord
 
   has_many :posts
   belongs_to :family, optional: true
+  has_and_belongs_to_many :tagged_posts, class_name: 'Post'
   has_secure_password
 
   enum role: %w[default manager admin]
@@ -23,6 +24,16 @@ class User < ApplicationRecord
 
   def post_count
     Post.where(user_id: id).count
+  end
+
+  def age
+    return nil unless birthdate
+    ((Date.current - birthdate) / 365.25).floor
+  end
+
+  def family_members
+    return User.none unless family
+    family.users.where.not(id: id)
   end
 
   private
