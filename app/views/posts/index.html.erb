@@ -13,10 +13,10 @@
       
       <%= turbo_frame_tag "new_post_modal" %>
       
-      <%= turbo_frame_tag "posts_list", class: "row g-4" do %>
+      <div class="row g-4">
         <% if @posts.any? %>
           <% @posts.each do |post| %>
-            <%= turbo_frame_tag "post_#{post.id}", class: "col-lg-6 col-xl-4" do %>
+            <div class="col-lg-6 col-xl-4">
               <div class="card h-100 shadow-sm border-0 hover-card" data-controller="memory" data-action="mouseenter->memory#hoverIn mouseleave->memory#hoverOut">
                 <div class="card-body p-4">
                   <div class="d-flex justify-content-between align-items-start mb-3">
@@ -29,7 +29,7 @@
                       </button>
                       <ul class="dropdown-menu">
                         <li><%= link_to "View", post, class: "dropdown-item", data: { turbo_frame: "_top" } %></li>
-                        <li><%= link_to "Edit", edit_post_path(post), class: "dropdown-item", data: { turbo_frame: "post_#{post.id}" } %></li>
+                        <li><%= link_to "Edit", edit_post_path(post), class: "dropdown-item", data: { turbo_frame: "_top" } %></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><%= link_to "Delete", post, method: :delete, class: "dropdown-item text-danger", 
                                 confirm: "Delete this memory?", data: { turbo_method: :delete } %></li>
@@ -66,7 +66,7 @@
                       data: { turbo_frame: "_top" } %>
                 </div>
               </div>
-            <% end %>
+            </div>
           <% end %>
         <% else %>
           <div class="col-12">
@@ -80,7 +80,7 @@
             </div>
           </div>
         <% end %>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>
