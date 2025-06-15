@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-RSpec.describe "Logging In" do
+RSpec.describe 'Logging In' do
   before(:each) do
     DatabaseCleaner.clean_with(:truncation)
   end
 
   let(:user) { create(:claimed_user) }
 
-  it "can log in with valid credentials" do
+  it 'can log in with valid credentials' do
     visit root_path
 
-    within("#welcome-session-options") do
-      click_on "Log In"
+    within('#welcome-session-options') do
+      click_on 'Log In'
     end
 
     expect(current_path).to eq(login_path)
@@ -19,8 +19,8 @@ RSpec.describe "Logging In" do
     fill_in :username, with: user.username
     fill_in :password, with: user.password
 
-    within("#login-form") do
-      click_on "Log In"
+    within('#login-form') do
+      click_on 'Log In'
     end
 
     expect(current_path).to eq(root_path)
@@ -28,14 +28,14 @@ RSpec.describe "Logging In" do
     expect(page).to have_content("Welcome, #{user.name}")
   end
 
-  it "cannot log in with bad credentials" do
+  it 'cannot log in with bad credentials' do
     visit login_path
 
     fill_in :username, with: user.username
-    fill_in :password, with: "incorrect password"
+    fill_in :password, with: 'incorrect password'
 
-    within("#login-form") do
-      click_on "Log In"
+    within('#login-form') do
+      click_on 'Log In'
     end
 
     expect(current_path).to eq(login_path)
@@ -44,7 +44,7 @@ RSpec.describe "Logging In" do
   end
 
   context 'when signed in' do
-    it "shows logout" do
+    it 'shows logout' do
       visit login_path
 
       expect(current_path).to eq(login_path)
@@ -52,15 +52,15 @@ RSpec.describe "Logging In" do
       fill_in :username, with: user.username
       fill_in :password, with: user.password
 
-      within("#login-form") do
-        click_on "Log In"
+      within('#login-form') do
+        click_on 'Log In'
       end
 
       expect(current_path).to eq(root_path)
-      expect(page).to have_content("Log Out")
+      expect(page).to have_content('Log Out')
     end
 
-    it "does not show sign up / login" do
+    it 'does not show sign up / login' do
       visit login_path
 
       expect(current_path).to eq(login_path)
@@ -68,26 +68,26 @@ RSpec.describe "Logging In" do
       fill_in :username, with: user.username
       fill_in :password, with: user.password
 
-      within("#login-form") do
-        click_on "Log In"
+      within('#login-form') do
+        click_on 'Log In'
       end
 
       expect(current_path).to eq(root_path)
-      expect(page).to_not have_content("Sign Up")
-      expect(page).to_not have_content("Log In")
+      expect(page).to_not have_content('Sign Up')
+      expect(page).to_not have_content('Log In')
     end
   end
 
   context 'when signed out' do
-    it "does not show logout" do
+    it 'does not show logout' do
       visit root_path
-      expect(page).to_not have_content("Log Out")
+      expect(page).to_not have_content('Log Out')
     end
 
-    it "does not show sign up / login" do
+    it 'does not show sign up / login' do
       visit root_path
-      expect(page).to have_content("Sign Up")
-      expect(page).to have_content("Log In")
+      expect(page).to have_content('Sign Up')
+      expect(page).to have_content('Log In')
     end
   end
 
@@ -99,19 +99,19 @@ RSpec.describe "Logging In" do
     fill_in :username, with: user.username
     fill_in :password, with: user.password
 
-    within("#login-form") do
-      click_on "Log In"
+    within('#login-form') do
+      click_on 'Log In'
     end
 
-    expect(page).to_not have_content("Sign Up")
-    expect(page).to_not have_content("Log In")
+    expect(page).to_not have_content('Sign Up')
+    expect(page).to_not have_content('Log In')
 
-    within("#welcome-session-options") do
-      click_on "Log Out"
+    within('#welcome-session-options') do
+      click_on 'Log Out'
     end
 
-    expect(page).to have_content("Sign Up")
-    expect(page).to have_content("Log In")
+    expect(page).to have_content('Sign Up')
+    expect(page).to have_content('Log In')
     expect(current_path).to eq(root_path)
   end
 
@@ -123,21 +123,21 @@ RSpec.describe "Logging In" do
     fill_in :username, with: user.username
     fill_in :password, with: user.password
 
-    within("#login-form") do
-      click_on "Log In"
+    within('#login-form') do
+      click_on 'Log In'
     end
 
     visit posts_path
 
-    expect(page).to_not have_content("Sign Up")
-    expect(page).to_not have_content("Log In")
+    expect(page).to_not have_content('Sign Up')
+    expect(page).to_not have_content('Log In')
 
-    within("#session-options") do
-      click_on "Log Out"
+    within('#session-options') do
+      click_on 'Log Out'
     end
 
-    expect(page).to have_content("Sign Up")
-    expect(page).to have_content("Log In")
+    expect(page).to have_content('Sign Up')
+    expect(page).to have_content('Log In')
     expect(current_path).to eq(root_path)
   end
 end
