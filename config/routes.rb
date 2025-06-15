@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root 'welcome#index'
 
   resources :posts
+  resources :families
   resources :users do
     resources :posts, only: [:index]
   end

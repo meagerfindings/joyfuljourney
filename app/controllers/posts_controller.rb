@@ -8,9 +8,9 @@ class PostsController < ApplicationController
   def index
     if params[:user_id]
       @user = User.find(params[:user_id])
-      @posts = @user.posts
+      @posts = visible_posts_for_user(@user)
     else
-      @posts = Post.all
+      @posts = visible_posts_for_current_user
     end
   end
 
@@ -57,6 +57,24 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body)
+    params.require(:post).permit(:title, :body, :private)
+  end
+
+  def visible_posts_for_user(user)
+    if current_user&.family == user.family && current_user.family.present?
+      user.posts.public_posts
+    elsif current_user == user
+      user.posts
+    else
+      Post.none
+    end
+  end
+
+  def visible_posts_for_current_user
+    if current_user&.family.present?
+      Post.visible_to_family(current_user.family)
+    else
+      Post.public_posts
+    end
   end
 end

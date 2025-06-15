@@ -12,5 +12,6 @@ FactoryBot.define do
     sequence(:username) { |n| "claimed_#{n}" }
     password { 'claimed123' }
     claimed { true }
+    family
   end
 end

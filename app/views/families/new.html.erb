@@ -1,0 +1,29 @@
+<% content_for :title, "Create Family" %>
+
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h1>Create Family</h1>
+
+    <%= form_with model: @family, local: true do |form| %>
+      <% if @family.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <% @family.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= form.label :name, class: "form-label" %>
+        <%= form.text_field :name, class: "form-control" %>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <%= form.submit "Create Family", class: "btn btn-primary" %>
+        <%= link_to "Cancel", families_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
