@@ -11,6 +11,42 @@
             data: { turbo_frame: "_top" } %>
       </div>
       
+      <% unless is_user_post_index %>
+        <% if current_user&.family&.users&.any? %>
+          <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="card-title mb-3">
+                <i class="bi bi-funnel me-1"></i>
+                Filter by Tagged Family Members
+              </h6>
+              <%= form_with url: posts_path, method: :get, local: true, class: "d-flex flex-wrap gap-2 align-items-end" do |form| %>
+                <div class="flex-grow-1">
+                  <%= form.select :tagged_user_id, 
+                      options_from_collection_for_select(current_user.family.users, :id, :name, params[:tagged_user_id]),
+                      { prompt: "All family members" },
+                      { class: "form-select", style: "min-width: 200px;" } %>
+                </div>
+                <div>
+                  <%= form.submit "Filter", class: "btn btn-outline-primary" %>
+                  <% if params[:tagged_user_id].present? %>
+                    <%= link_to "Clear", posts_path, class: "btn btn-outline-secondary" %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% if params[:tagged_user_id].present? %>
+                <% filtered_user = User.find(params[:tagged_user_id]) %>
+                <div class="mt-2">
+                  <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Showing posts tagged with <strong><%= filtered_user.name %></strong>
+                  </small>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+      
       <%= turbo_frame_tag "new_post_modal" %>
       
       <div class="row g-4">
