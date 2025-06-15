@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Posts Edit Page", type: :feature do
   let(:user) { User.create(first_name: "BNNY", last_name: "RBBT", birthdate: "June 20, 1980") }
-  let(:post) { user.post.create(title: "If I Were Human", body: "If I were human, I'd wake up everyday a new man.") }
+  let(:post) { user.posts.create(title: "If I Were Human", body: "If I were human, I'd wake up everyday a new man.") }
 
   before(:each) do
     DatabaseCleaner.clean_with(:truncation)

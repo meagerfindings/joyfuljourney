@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe PostsController, type: :controller do
   let(:user) { User.create(first_name: "Johny", last_name: "Five") }
-  let(:post_1) { user.post.create(title: "Live Please", body: "No disassemble! Stephanie, no disassemble!") }
+  let(:post_1) { user.posts.create(title: "Live Please", body: "No disassemble! Stephanie, no disassemble!") }
 
   describe 'Get Index' do
     it 'renders index' do
