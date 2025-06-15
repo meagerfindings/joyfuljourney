@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   resources :posts
   resources :families
   resources :milestones
+  resources :timeline, only: [:index]
+  get '/timeline/truncated', to: 'timeline#show_truncated'
   resources :users do
     resources :posts, only: [:index]
     resources :milestones, only: [:index, :show]

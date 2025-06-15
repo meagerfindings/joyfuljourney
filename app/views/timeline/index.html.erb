@@ -1,0 +1,197 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+          <i class="bi bi-clock-history me-2"></i>Timeline
+        </h1>
+        <div class="d-flex gap-2">
+          <%= link_to "New Post", new_post_path, class: "btn btn-outline-primary" %>
+          <%= link_to "New Milestone", new_milestone_path, class: "btn btn-outline-success" %>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <%= form_with url: timeline_index_path, method: :get, local: true, class: "row g-3" do |form| %>
+            <div class="col-md-4">
+              <%= form.label :filter_type, "Content Type", class: "form-label" %>
+              <%= form.select :filter_type, 
+                    options_for_select([
+                      ['All Items', 'all'],
+                      ['Posts Only', 'posts'],
+                      ['Milestones Only', 'milestones']
+                    ], @filter_type), 
+                    {}, 
+                    { class: "form-select" } %>
+            </div>
+            <div class="col-md-4">
+              <%= form.label :filter_milestone_type, "Milestone Type", class: "form-label" %>
+              <%= form.select :filter_milestone_type, 
+                    options_for_select([['All Types', '']] + @milestone_types.map { |type| [type.humanize, type] }, @filter_milestone_type), 
+                    {}, 
+                    { class: "form-select" } %>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <%= form.submit "Apply Filters", class: "btn btn-primary me-2" %>
+              <%= link_to "Clear", timeline_index_path, class: "btn btn-outline-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline">
+        <% if @timeline_items.any? %>
+          <% @timeline_items.each_with_index do |item, index| %>
+            <div class="timeline-item mb-4" data-item-type="<%= item.class.name.downcase %>">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-9">
+                      <% if item.is_a?(Post) %>
+                        <div class="d-flex align-items-center mb-2">
+                          <i class="bi bi-file-text text-primary me-2"></i>
+                          <h5 class="card-title mb-0">
+                            <%= link_to item.title, post_path(item), class: "text-decoration-none" %>
+                          </h5>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          Posted by <%= item.user.first_name || item.user.username %> 
+                          on <%= item.created_at.strftime("%B %d, %Y") %>
+                        </p>
+                        <div class="timeline-content">
+                          <p class="card-text"><%= truncate(item.body, length: 200) %></p>
+                          <% if item.tagged_users.any? %>
+                            <div class="mt-2">
+                              <small class="text-muted">Tagged: </small>
+                              <% item.tagged_users.each do |tagged_user| %>
+                                <span class="badge bg-light text-dark me-1"><%= tagged_user.first_name || tagged_user.username %></span>
+                              <% end %>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% elsif item.is_a?(Milestone) %>
+                        <div class="d-flex align-items-center mb-2">
+                          <i class="bi bi-trophy text-success me-2"></i>
+                          <h5 class="card-title mb-0">
+                            <%= link_to item.title, milestone_path(item), class: "text-decoration-none" %>
+                          </h5>
+                          <span class="badge bg-success ms-2"><%= item.milestone_type_display %></span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                          Created by <%= item.created_by_user.first_name || item.created_by_user.username %> 
+                          for <%= item.milestone_date.strftime("%B %d, %Y") %>
+                        </p>
+                        <div class="timeline-content">
+                          <% if item.description.present? %>
+                            <p class="card-text"><%= truncate(item.description, length: 200) %></p>
+                          <% end %>
+                          <small class="text-muted">
+                            Related to: <%= item.milestoneable_type %> 
+                            <% if item.milestoneable_type == 'User' %>
+                              (<%= item.milestoneable.first_name || item.milestoneable.username %>)
+                            <% elsif item.milestoneable_type == 'Family' %>
+                              (<%= item.milestoneable.name %>)
+                            <% elsif item.milestoneable_type == 'Post' %>
+                              (<%= item.milestoneable.title %>)
+                            <% end %>
+                          </small>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="col-md-3 text-end">
+                      <div class="timeline-date">
+                        <div class="badge bg-light text-dark p-2">
+                          <%= case item
+                              when Post
+                                item.created_at.strftime("%b %d")
+                              when Milestone
+                                item.milestone_date.strftime("%b %d")
+                              end %>
+                        </div>
+                      </div>
+                      <div class="mt-2">
+                        <% if item.is_a?(Post) %>
+                          <%= link_to "View", post_path(item), class: "btn btn-sm btn-outline-primary me-1" %>
+                          <% if item.user == current_user || manager_or_admin? %>
+                            <%= link_to "Edit", edit_post_path(item), class: "btn btn-sm btn-outline-secondary" %>
+                          <% end %>
+                        <% elsif item.is_a?(Milestone) %>
+                          <%= link_to "View", milestone_path(item), class: "btn btn-sm btn-outline-success me-1" %>
+                          <% if item.created_by_user == current_user || manager_or_admin? %>
+                            <%= link_to "Edit", edit_milestone_path(item), class: "btn btn-sm btn-outline-secondary" %>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h3 class="text-muted mt-3">No items found</h3>
+            <p class="text-muted">Try adjusting your filters or create some content!</p>
+            <div class="mt-3">
+              <%= link_to "Create Post", new_post_path, class: "btn btn-primary me-2" %>
+              <%= link_to "Create Milestone", new_milestone_path, class: "btn btn-success" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.timeline-item {
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 60px;
+  width: 2px;
+  height: calc(100% + 16px);
+  background-color: #dee2e6;
+  z-index: 1;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 20px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.timeline-item[data-item-type="post"]::before {
+  background-color: #0d6efd;
+}
+
+.timeline-item[data-item-type="milestone"]::before {
+  background-color: #198754;
+}
+
+.timeline {
+  margin-left: 30px;
+}
+
+.timeline-content {
+  max-height: 150px;
+  overflow: hidden;
+}
+
+.timeline-date .badge {
+  font-size: 0.9rem;
+}
+</style>
