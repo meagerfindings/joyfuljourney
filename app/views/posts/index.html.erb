@@ -12,6 +12,16 @@
       <br/>
       <p><%= post.body %></p>
       <p>by: <%= post.user.name %></p>
+      <% if post.tagged_users.any? %>
+        <p>
+          <small class="text-muted">
+            Tagged: 
+            <% post.tagged_users.each_with_index do |tagged_user, index| %>
+              <%= tagged_user.name %><%= " (#{tagged_user.display_age})" if tagged_user.display_age %><%= ", " unless index == post.tagged_users.count - 1 %>
+            <% end %>
+          </small>
+        </p>
+      <% end %>
     </li>
   <% end %>
 </ul>

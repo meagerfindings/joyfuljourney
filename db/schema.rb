@@ -10,9 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_13_190447) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_15_185758) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "families", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_families_on_name"
+  end
 
   create_table "posts", force: :cascade do |t|
     t.string "title"
@@ -20,7 +27,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_13_190447) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.boolean "private", default: false, null: false
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "posts_users", id: false, force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.bigint "user_id", null: false
+    t.index ["post_id", "user_id"], name: "index_posts_users_on_post_id_and_user_id"
+    t.index ["user_id", "post_id"], name: "index_posts_users_on_user_id_and_post_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -35,7 +50,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_13_190447) do
     t.string "password_digest"
     t.boolean "claimed", default: false
     t.integer "role", default: 0
+    t.bigint "family_id"
+    t.index ["family_id"], name: "index_users_on_family_id"
   end
 
   add_foreign_key "posts", "users"
+  add_foreign_key "users", "families"
 end

@@ -20,6 +20,20 @@
       <%= form.check_box :private %>
       <%= form.label :private, "Private post (only visible to you)" %>
     </div>
+
+    <% if current_user&.family&.users&.where&.not(id: current_user.id)&.any? %>
+    <div>
+      <%= form.label :tagged_user_ids, "Tag Family Members:" %><br>
+      <%= form.collection_check_boxes :tagged_user_ids, current_user.family_members, :id, :name do |b| %>
+        <div>
+          <%= b.check_box %>
+          <%= b.label do %>
+            <%= b.object.name %><%= " (#{b.object.display_age})" if b.object.display_age %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <% end %>
   </div>
 
   <!--TODO: temporarily hardcode submitting user as last user as authentication has not been added yet. Once that is added, remove hardcoded value and use:-->

@@ -3,6 +3,7 @@ class Post < ApplicationRecord
   validates :body, presence: true, length: { minimum: 10 }
 
   belongs_to :user
+  has_and_belongs_to_many :tagged_users, class_name: 'User'
 
   scope :visible_to_family, ->(family) { 
     joins(:user).where(users: { family: family }).where(private: false)

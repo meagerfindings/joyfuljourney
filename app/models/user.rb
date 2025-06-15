@@ -1,6 +1,4 @@
 class User < ApplicationRecord
-  attr_reader :name
-
   before_validation :set_random_password, on: :create, unless: %i[claimed password]
   before_validation :set_random_username, on: :create, unless: %i[claimed username]
 
@@ -13,6 +11,7 @@ class User < ApplicationRecord
 
   has_many :posts
   belongs_to :family, optional: true
+  has_and_belongs_to_many :tagged_posts, class_name: 'Post'
   has_secure_password
 
   enum role: %w[default manager admin]
@@ -23,6 +22,40 @@ class User < ApplicationRecord
 
   def post_count
     Post.where(user_id: id).count
+  end
+
+  def age
+    return nil unless birthdate
+
+    ((Date.current - birthdate) / 365.25).floor
+  end
+
+  def age_in_months
+    return nil unless birthdate
+
+    ((Date.current - birthdate) / 30.44).floor # Average days per month
+  end
+
+  def display_age
+    return nil unless birthdate
+
+    years = age
+    months = age_in_months
+    days = (Date.current - birthdate).to_i
+
+    if years >= 1
+      "#{years} #{'year'.pluralize(years)} old"
+    elsif months >= 1
+      "#{months} #{'month'.pluralize(months)} old"
+    elsif days >= 1
+      "#{days} #{'day'.pluralize(days)} old"
+    end
+  end
+
+  def family_members
+    return User.none unless family
+
+    family.users.where.not(id:)
   end
 
   private
