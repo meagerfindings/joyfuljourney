@@ -1,4 +1,4 @@
-<%= form_with model: @post, local: true, data: { controller: "memory", action: "submit->memory#validateForm" } do |form| %>
+<%= form_with model: @post, data: { controller: "memory", action: "submit->memory#validateForm", turbo_frame: "_top" } do |form| %>
   <div class="card shadow-sm border-0">
     <div class="card-header bg-primary text-white">
       <h4 class="mb-0">

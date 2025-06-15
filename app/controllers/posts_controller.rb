@@ -25,15 +25,9 @@ class PostsController < ApplicationController
     @post.user = current_user
 
     if validate_tagged_users && @post.save
-      respond_to do |format|
-        format.html { redirect_to @post, notice: 'Memory was successfully created! 🎉' }
-        format.turbo_stream { redirect_to @post }
-      end
+      redirect_to @post, notice: 'Memory was successfully created! 🎉'
     else
-      respond_to do |format|
-        format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("post_form", partial: "form", locals: { post: @post }) }
-      end
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -41,24 +35,15 @@ class PostsController < ApplicationController
 
   def update
     if validate_tagged_users && @post.update(post_params)
-      respond_to do |format|
-        format.html { redirect_to @post, notice: 'Memory was successfully updated! ✨' }
-        format.turbo_stream { redirect_to @post }
-      end
+      redirect_to @post, notice: 'Memory was successfully updated! ✨'
     else
-      respond_to do |format|
-        format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("post_form", partial: "form", locals: { post: @post }) }
-      end
+      render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
     @post.destroy
-    respond_to do |format|
-      format.html { redirect_to posts_path, notice: 'Memory was successfully deleted.', status: :see_other }
-      format.turbo_stream { redirect_to posts_path, status: :see_other }
-    end
+    redirect_to posts_path, notice: 'Memory was successfully deleted.', status: :see_other
   end
 
   private
