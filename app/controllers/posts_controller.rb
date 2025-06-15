@@ -11,6 +11,15 @@ class PostsController < ApplicationController
       @posts = visible_posts_for_user(@user)
     else
       @posts = visible_posts_for_current_user
+      
+      # Filter by tagged user if specified
+      if params[:tagged_user_id].present?
+        tagged_user = User.find(params[:tagged_user_id])
+        # Ensure the tagged user is in the current user's family
+        if current_user&.family == tagged_user.family
+          @posts = @posts.joins(:tagged_users).where(users: { id: tagged_user.id }).distinct
+        end
+      end
     end
   end
 
