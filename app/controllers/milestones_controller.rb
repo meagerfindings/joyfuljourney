@@ -20,7 +20,7 @@ class MilestonesController < ApplicationController
   end
 
   def new
-    @milestone = (@milestoneable&.milestones || Milestone).build
+    @milestone = @milestoneable&.milestones&.build || Milestone.new
     @milestone_types = Milestone::MILESTONE_TYPES
   end
 
