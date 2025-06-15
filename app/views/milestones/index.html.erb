@@ -11,37 +11,157 @@ else
   "All Milestones"
 end %>
 
-<h1><%= page_title %></h1>
-
-<%= link_to "New Milestone", @milestoneable ? new_polymorphic_path([@milestoneable, :milestone]) : new_milestone_path, class: "btn btn-primary" %>
-
-<% if @milestones.any? %>
-  <ul>
-    <% @milestones.each do |milestone| %>
-      <li id="milestone-<%= milestone.id %>">
-        <h3><%= link_to milestone.title, milestone %></h3>
-        <p><strong>Date:</strong> <%= milestone.milestone_date.strftime("%B %d, %Y") %></p>
-        <p><strong>Type:</strong> <%= milestone.milestone_type_display %></p>
-        <% if milestone.description.present? %>
-          <p><%= milestone.description %></p>
-        <% end %>
-        <p><strong>For:</strong> 
-          <% case milestone.milestoneable_type %>
-          <% when 'User' %>
-            <%= milestone.milestoneable.name %>
-          <% when 'Family' %>
-            <%= milestone.milestoneable.name %> family
-          <% when 'Post' %>
-            Post "<%= milestone.milestoneable.title %>"
+<div class="container py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4 fw-bold text-primary">
+          <i class="bi bi-trophy-fill me-3"></i>
+          <%= page_title %>
+        </h1>
+        <%= link_to "🎉 Add New Milestone", 
+            @milestoneable ? new_polymorphic_path([@milestoneable, :milestone]) : new_milestone_path, 
+            class: "btn btn-primary btn-lg" %>
+      </div>
+      
+      <% if @milestones.any? %>
+        <div class="row g-4">
+          <% @milestones.each do |milestone| %>
+            <div class="col-lg-6 col-xl-4" id="milestone-<%= milestone.id %>">
+              <div class="card h-100 shadow-sm border-0 milestone-card" data-controller="memory" data-action="mouseenter->memory#hoverIn mouseleave->memory#hoverOut">
+                <div class="card-header bg-gradient text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h5 class="card-title mb-2 text-white">
+                        <%= link_to milestone.title, milestone, class: "text-white text-decoration-none fw-bold" %>
+                      </h5>
+                      <div class="d-flex align-items-center text-white-50">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        <%= milestone.milestone_date.strftime("%B %d, %Y") %>
+                      </div>
+                    </div>
+                    <% if milestone.is_private %>
+                      <span class="badge bg-warning">
+                        <i class="bi bi-lock-fill me-1"></i>
+                        Private
+                      </span>
+                    <% end %>
+                  </div>
+                  
+                  <!-- Decorative elements -->
+                  <div class="position-absolute" style="top: -20px; right: -20px; font-size: 4rem; opacity: 0.1;">
+                    <%= case milestone.milestone_type_display.downcase
+                        when /birthday/ then "🎂"
+                        when /graduation/ then "🎓"
+                        when /wedding/ then "💒"
+                        when /anniversary/ then "💖"
+                        when /achievement/ then "🏆"
+                        when /first/ then "🌟"
+                        else "🎉"
+                        end %>
+                  </div>
+                </div>
+                
+                <div class="card-body p-4">
+                  <div class="mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                      <i class="bi bi-tag-fill me-1"></i>
+                      <%= milestone.milestone_type_display %>
+                    </span>
+                  </div>
+                  
+                  <% if milestone.description.present? %>
+                    <p class="card-text text-muted mb-3">
+                      <%= truncate(milestone.description, length: 120) %>
+                    </p>
+                  <% end %>
+                  
+                  <div class="milestone-details">
+                    <div class="mb-2">
+                      <small class="text-muted">
+                        <i class="bi bi-person-heart me-1"></i>
+                        <strong>For:</strong>
+                        <% case milestone.milestoneable_type %>
+                        <% when 'User' %>
+                          <span class="badge bg-light text-dark">
+                            <%= milestone.milestoneable.name %>
+                          </span>
+                        <% when 'Family' %>
+                          <span class="badge bg-info bg-opacity-10 text-info">
+                            <i class="bi bi-house-heart me-1"></i>
+                            <%= milestone.milestoneable.name %> family
+                          </span>
+                        <% when 'Post' %>
+                          <span class="badge bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-journal-text me-1"></i>
+                            "<%= truncate(milestone.milestoneable.title, length: 20) %>"
+                          </span>
+                        <% end %>
+                      </small>
+                    </div>
+                    
+                    <div>
+                      <small class="text-muted">
+                        <i class="bi bi-person-plus me-1"></i>
+                        Created by <strong><%= milestone.created_by_user.name %></strong>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 pt-0">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <%= link_to "View Details →", milestone, class: "btn btn-outline-primary btn-sm" %>
+                    
+                    <div class="btn-group">
+                      <%= link_to "✏️", edit_milestone_path(milestone), class: "btn btn-sm btn-outline-secondary", title: "Edit" %>
+                      <%= link_to "📤", "#", class: "btn btn-sm btn-outline-secondary", title: "Share",
+                          data: { controller: "memory", action: "click->memory#share", 
+                                 memory_title_value: milestone.title, 
+                                 memory_url_value: milestone_url(milestone) } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           <% end %>
-        </p>
-        <p><small class="text-muted">Created by <%= milestone.created_by_user.name %></small></p>
-        <% if milestone.is_private %>
-          <span class="badge badge-warning">Private</span>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>No milestones found. <%= link_to "Create the first one!", @milestoneable ? new_polymorphic_path([@milestoneable, :milestone]) : new_milestone_path %>.</p>
-<% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-5">
+          <div class="display-1 text-muted mb-3">🎯</div>
+          <h3 class="text-muted mb-3">No milestones yet</h3>
+          <p class="text-muted mb-4">Start tracking life's special moments and achievements!</p>
+          <%= link_to "🎉 Create Your First Milestone", 
+              @milestoneable ? new_polymorphic_path([@milestoneable, :milestone]) : new_milestone_path, 
+              class: "btn btn-primary btn-lg" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .milestone-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .milestone-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+  }
+  
+  .bg-gradient {
+    position: relative;
+  }
+  
+  .bg-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+</style>
