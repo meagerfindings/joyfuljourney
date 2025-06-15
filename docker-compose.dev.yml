@@ -5,15 +5,18 @@ services:
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: joyful_journey_development
   web:
     build:
       context: .
       dockerfile: Dockerfile.dev
     command: bundle exec rails s -p 3000 -b '0.0.0.0'
     volumes:
-      - .:/app
+      - .:/var/www/app
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - db
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
