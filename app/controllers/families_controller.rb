@@ -22,6 +22,7 @@ class FamiliesController < ApplicationController
 
     if @family.save
       current_user.update(family: @family)
+      current_user.reload  # Reload to ensure family association is fresh
       redirect_to @family, notice: 'Family was successfully created.'
     else
       render :new, status: :unprocessable_entity
