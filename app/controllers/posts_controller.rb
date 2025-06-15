@@ -23,7 +23,9 @@ class PostsController < ApplicationController
     end
   end
 
-  def show; end
+  def show
+    @post.milestones.includes(:created_by_user)
+  end
 
   def new
     @post = Post.new
