@@ -1,45 +1,91 @@
-<%= form_with model: @post do |form| %>
-  <div id=post-edit-details>
-    <div>
-      <%= form.label :title %><br>
-      <%= form.text_field :title %>
-      <% @post.errors.full_messages_for(:title).each do |message| %>
-        <div><%= message %></div>
-      <% end %>
+<%= form_with model: @post, local: true, data: { controller: "memory", action: "submit->memory#validateForm" } do |form| %>
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">
+        <i class="bi bi-journal-plus me-2"></i>
+        <%= @post.new_record? ? "Create New Memory" : "Edit Memory" %>
+      </h4>
     </div>
+    
+    <div class="card-body p-4">
+      <div class="mb-4">
+        <%= form.label :title, class: "form-label fw-semibold" %>
+        <%= form.text_field :title, class: "form-control form-control-lg", placeholder: "Give your memory a beautiful title..." %>
+        <% @post.errors.full_messages_for(:title).each do |message| %>
+          <div class="invalid-feedback d-block">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            <%= message %>
+          </div>
+        <% end %>
+      </div>
 
-    <div>
-      <%= form.label :body %><br>
-      <%= form.text_area :body %>
-      <% @post.errors.full_messages_for(:body).each do |message| %>
-        <div><%= message %></div>
-      <% end %>
-    </div>
+      <div class="mb-4">
+        <%= form.label :body, "Your Memory", class: "form-label fw-semibold" %>
+        <%= form.text_area :body, class: "form-control", rows: 6, placeholder: "Share the details of this precious memory...", data: { action: "input->memory#autoResize" } %>
+        <div class="form-text">
+          <i class="bi bi-info-circle me-1"></i>
+          Tell your story in your own words. What made this moment special?
+        </div>
+        <% @post.errors.full_messages_for(:body).each do |message| %>
+          <div class="invalid-feedback d-block">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            <%= message %>
+          </div>
+        <% end %>
+      </div>
 
-    <div>
-      <%= form.check_box :private %>
-      <%= form.label :private, "Private post (only visible to you)" %>
-    </div>
+      <div class="mb-4">
+        <div class="form-check form-switch">
+          <%= form.check_box :private, class: "form-check-input" %>
+          <%= form.label :private, "🔒 Private Memory (only visible to you)", class: "form-check-label" %>
+        </div>
+        <small class="text-muted">
+          Private memories won't be shared with other family members
+        </small>
+      </div>
 
-    <% if current_user&.family&.users&.where&.not(id: current_user.id)&.any? %>
-    <div>
-      <%= form.label :tagged_user_ids, "Tag Family Members:" %><br>
-      <%= form.collection_check_boxes :tagged_user_ids, current_user.family_members, :id, :name do |b| %>
-        <div>
-          <%= b.check_box %>
-          <%= b.label do %>
-            <%= b.object.name %><%= " (#{b.object.display_age})" if b.object.display_age %>
-          <% end %>
+      <% if current_user&.family&.users&.where&.not(id: current_user.id)&.any? %>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-people-fill me-2"></i>
+            Tag Family Members:
+          </label>
+          <div class="row g-2">
+            <%= form.collection_check_boxes :tagged_user_ids, current_user.family_members, :id, :name do |b| %>
+              <div class="col-md-6">
+                <div class="form-check">
+                  <%= b.check_box(class: "form-check-input") %>
+                  <%= b.label(class: "form-check-label") do %>
+                    <span class="badge bg-light text-dark">
+                      <i class="bi bi-person me-1"></i>
+                      <%= b.object.name %><%= " (#{b.object.display_age})" if b.object.display_age %>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <small class="text-muted">
+            Tag family members who were part of this memory
+          </small>
         </div>
       <% end %>
     </div>
-    <% end %>
-  </div>
 
-  <!--TODO: temporarily hardcode submitting user as last user as authentication has not been added yet. Once that is added, remove hardcoded value and use:-->
-   <%#= form.hidden_field :user_id, value: current_user.id %>
-
-  <div>
-    <%= form.submit %>
+    <div class="card-footer bg-light border-0">
+      <div class="d-flex justify-content-between">
+        <%= link_to "Cancel", (@post.new_record? ? posts_path : @post), 
+            class: "btn btn-outline-secondary", 
+            data: { turbo_frame: "_top" } %>
+        
+        <div class="d-flex gap-2">
+          <% unless @post.new_record? %>
+            <%= link_to "👁️ View", @post, class: "btn btn-outline-primary", data: { turbo_frame: "_top" } %>
+          <% end %>
+          <%= form.submit (@post.new_record? ? "✨ Create Memory" : "💾 Update Memory"), 
+              class: "btn btn-primary btn-lg px-4" %>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>
