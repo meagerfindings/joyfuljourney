@@ -1,0 +1,35 @@
+<% content_for :title, "Families" %>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Families</h1>
+      <% if current_user.family.blank? %>
+        <%= link_to "Create Family", new_family_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+
+    <% if @families.any? %>
+      <div class="row">
+        <% @families.each do |family| %>
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><%= family.name %></h5>
+                <p class="card-text">
+                  <strong>Members:</strong> <%= family.users.count %><br>
+                  <strong>Posts:</strong> <%= family.posts.count %>
+                </p>
+                <%= link_to "View Family", family, class: "btn btn-outline-primary" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="alert alert-info">
+        <p>No families found. <%= link_to "Create your first family", new_family_path %> to get started!</p>
+      </div>
+    <% end %>
+  </div>
+</div>

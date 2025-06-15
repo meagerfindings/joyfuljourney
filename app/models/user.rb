@@ -12,6 +12,7 @@ class User < ApplicationRecord
   before_save :downcase_username
 
   has_many :posts
+  belongs_to :family, optional: true
   has_secure_password
 
   enum role: %w[default manager admin]

@@ -15,6 +15,11 @@
         <div><%= message %></div>
       <% end %>
     </div>
+
+    <div>
+      <%= form.check_box :private %>
+      <%= form.label :private, "Private post (only visible to you)" %>
+    </div>
   </div>
 
   <!--TODO: temporarily hardcode submitting user as last user as authentication has not been added yet. Once that is added, remove hardcoded value and use:-->

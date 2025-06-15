@@ -1,7 +1,15 @@
-<h1><%= @post.title %></h1>
+<h1>
+  <%= @post.title %>
+  <% if @post.private? %>
+    <span class="badge bg-secondary">Private</span>
+  <% end %>
+</h1>
 
 <div id=post-details>
-  <i>by: <%= @post.user.name %></i>
+  <i>by: <%= @post.user.name %> on <%= @post.created_at.strftime("%B %d, %Y") %></i>
+  <% if @post.user.family.present? %>
+    <div><small class="text-muted">Family: <%= @post.user.family.name %></small></div>
+  <% end %>
   <p><%= @post.body %></p>
 </div>
 

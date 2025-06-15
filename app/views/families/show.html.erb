@@ -1,0 +1,63 @@
+<% content_for :title, @family.name %>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><%= @family.name %></h1>
+      <div>
+        <%= link_to "Edit Family", edit_family_path(@family), class: "btn btn-outline-secondary" %>
+        <%= link_to "All Families", families_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h5>Family Members</h5>
+          </div>
+          <div class="card-body">
+            <% if @family_members.any? %>
+              <% @family_members.each do |member| %>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span><%= member.name %></span>
+                  <small class="text-muted"><%= member.role.humanize %></small>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-muted">No family members yet.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h5>Family Posts</h5>
+          </div>
+          <div class="card-body">
+            <% if @family_posts.any? %>
+              <% @family_posts.each do |post| %>
+                <div class="mb-3 pb-3 border-bottom">
+                  <h6>
+                    <%= link_to post.title, post_path(post) %>
+                    <% if post.private? %>
+                      <span class="badge bg-secondary">Private</span>
+                    <% end %>
+                  </h6>
+                  <small class="text-muted">
+                    by <%= post.user.name %> on <%= post.created_at.strftime("%B %d, %Y") %>
+                  </small>
+                  <p class="mt-2"><%= truncate(post.body, length: 150) %></p>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-muted">No family posts yet. <%= link_to "Create the first post", new_post_path %>!</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -48,7 +48,12 @@ class ApplicationController < ActionController::Base
   def authorize_post_access(post)
     return if current_user == post.user || manager_or_admin?
 
-    flash[:error] = 'You can only access your own posts.'
-    redirect_to root_path
+    if post.private?
+      flash[:error] = 'You can only access your own private posts.'
+      redirect_to root_path
+    elsif current_user&.family != post.user.family || current_user&.family.blank?
+      flash[:error] = 'You can only access posts from your family members.'
+      redirect_to root_path
+    end
   end
 end
