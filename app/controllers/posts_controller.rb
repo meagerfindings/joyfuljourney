@@ -24,7 +24,7 @@ class PostsController < ApplicationController
     @post = Post.new(post_params)
     @post.user = current_user
 
-    if @post.save
+    if validate_tagged_users && @post.save
       redirect_to @post
     else
       render :new, status: :unprocessable_entity
@@ -34,7 +34,7 @@ class PostsController < ApplicationController
   def edit; end
 
   def update
-    if @post.update(post_params)
+    if validate_tagged_users && @post.update(post_params)
       redirect_to @post
     else
       render :edit, status: :unprocessable_entity
@@ -57,7 +57,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :private)
+    params.require(:post).permit(:title, :body, :private, tagged_user_ids: [])
   end
 
   def visible_posts_for_user(user)
@@ -76,5 +76,23 @@ class PostsController < ApplicationController
     else
       Post.public_posts
     end
+  end
+
+  def validate_tagged_users
+    return true unless params[:post][:tagged_user_ids].present?
+
+    tagged_user_ids = params[:post][:tagged_user_ids].reject(&:blank?)
+    return true if tagged_user_ids.empty?
+
+    # Ensure all tagged users are family members
+    family_member_ids = current_user.family_members.pluck(:id).map(&:to_s)
+    invalid_tags = tagged_user_ids - family_member_ids
+
+    if invalid_tags.any?
+      @post.errors.add(:tagged_users, 'can only include family members')
+      return false
+    end
+
+    true
   end
 end
