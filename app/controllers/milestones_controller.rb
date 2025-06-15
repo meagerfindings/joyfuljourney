@@ -22,6 +22,7 @@ class MilestonesController < ApplicationController
   def new
     @milestone = (@milestoneable&.milestones || Milestone).build
     @milestone_types = Milestone::MILESTONE_TYPES
+    @post = @milestoneable if @milestoneable.is_a?(Post)
   end
 
   def create
@@ -34,9 +35,14 @@ class MilestonesController < ApplicationController
     @milestone.created_by_user = current_user
 
     if @milestone.save
-      redirect_to @milestone, notice: 'Milestone was successfully created.'
+      if @milestoneable.is_a?(Post)
+        redirect_to @milestoneable, notice: 'Milestone was successfully created for this post.'
+      else
+        redirect_to @milestone, notice: 'Milestone was successfully created.'
+      end
     else
       @milestone_types = Milestone::MILESTONE_TYPES
+      @post = @milestoneable if @milestoneable.is_a?(Post)
       render :new, status: :unprocessable_entity
     end
   end

@@ -1,0 +1,78 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">
+            <i class="bi bi-trophy me-2"></i>
+            Create Milestone for "<%= @post.title %>"
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <%= form_with model: [@post, @milestone], local: true, class: "milestone-form" do |form| %>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <%= form.label :title, "Milestone Title", class: "form-label fw-bold" %>
+                <%= form.text_field :title, 
+                    placeholder: "e.g., First Steps, Graduation, Wedding", 
+                    class: "form-control #{'is-invalid' if @milestone.errors[:title].any?}" %>
+                <% @milestone.errors.full_messages_for(:title).each do |message| %>
+                  <div class="invalid-feedback"><%= message %></div>
+                <% end %>
+              </div>
+
+              <div class="col-md-6">
+                <%= form.label :milestone_date, "Date", class: "form-label fw-bold" %>
+                <%= form.date_field :milestone_date, 
+                    class: "form-control #{'is-invalid' if @milestone.errors[:milestone_date].any?}" %>
+                <% @milestone.errors.full_messages_for(:milestone_date).each do |message| %>
+                  <div class="invalid-feedback"><%= message %></div>
+                <% end %>
+              </div>
+
+              <div class="col-12">
+                <%= form.label :milestone_type, "Type", class: "form-label fw-bold" %>
+                <%= form.select :milestone_type, 
+                    options_for_select(Milestone::MILESTONE_TYPES.map { |type| [type.humanize, type] }, @milestone.milestone_type),
+                    { prompt: "Select milestone type" },
+                    { class: "form-select #{'is-invalid' if @milestone.errors[:milestone_type].any?}" } %>
+                <% @milestone.errors.full_messages_for(:milestone_type).each do |message| %>
+                  <div class="invalid-feedback"><%= message %></div>
+                <% end %>
+              </div>
+
+              <div class="col-12">
+                <%= form.label :description, "Description (optional)", class: "form-label fw-bold" %>
+                <%= form.text_area :description, 
+                    rows: 4, 
+                    placeholder: "Add more details about this milestone...", 
+                    class: "form-control #{'is-invalid' if @milestone.errors[:description].any?}" %>
+                <% @milestone.errors.full_messages_for(:description).each do |message| %>
+                  <div class="invalid-feedback"><%= message %></div>
+                <% end %>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <%= form.check_box :is_private, class: "form-check-input" %>
+                  <%= form.label :is_private, "Private milestone (only visible to family)", class: "form-check-label" %>
+                </div>
+              </div>
+            </div>
+
+            <%= form.hidden_field :milestoneable_type, value: "Post" %>
+            <%= form.hidden_field :milestoneable_id, value: @post.id %>
+
+            <div class="d-flex justify-content-between mt-4">
+              <%= link_to "← Back to Post", @post, class: "btn btn-outline-secondary" %>
+              <div>
+                <%= link_to "Cancel", @post, class: "btn btn-secondary me-2" %>
+                <%= form.submit "Create Milestone", class: "btn btn-success" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
