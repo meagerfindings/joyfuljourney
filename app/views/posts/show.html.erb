@@ -10,6 +10,18 @@
   <% if @post.user.family.present? %>
     <div><small class="text-muted">Family: <%= @post.user.family.name %></small></div>
   <% end %>
+  
+  <% if @post.tagged_users.any? %>
+    <div class="tagged-family-members">
+      <strong>Tagged Family Members:</strong>
+      <% @post.tagged_users.each do |tagged_user| %>
+        <span class="badge bg-light text-dark">
+          <%= tagged_user.name %><%= " (#{tagged_user.age} years old)" if tagged_user.age %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+  
   <p><%= @post.body %></p>
 </div>
 
