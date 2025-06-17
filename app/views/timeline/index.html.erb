@@ -45,7 +45,7 @@
       <div class="timeline">
         <% if @timeline_items.any? %>
           <% @timeline_items.each_with_index do |item, index| %>
-            <div class="timeline-item mb-4" data-item-type="<%= item.class.name.downcase %>">
+            <div class="timeline-item mb-4 <%= index.even? ? 'timeline-left' : 'timeline-right' %>" data-item-type="<%= item.class.name.downcase %>">
               <div class="card shadow-sm">
                 <div class="card-body">
                   <div class="row">
@@ -148,42 +148,74 @@
 </div>
 
 <style>
-.timeline-item {
+.timeline {
   position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.timeline-item:not(:last-child)::after {
+.timeline::after {
   content: '';
   position: absolute;
-  left: -20px;
-  top: 60px;
-  width: 2px;
-  height: calc(100% + 16px);
+  width: 4px;
   background-color: #dee2e6;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -2px;
   z-index: 1;
+}
+
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 10px 40px;
+}
+
+.timeline-left {
+  left: 0;
+  text-align: right;
+}
+
+.timeline-right {
+  left: 50%;
+  text-align: left;
 }
 
 .timeline-item::before {
   content: '';
   position: absolute;
-  left: -26px;
-  top: 20px;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   z-index: 2;
+  top: 30px;
+}
+
+.timeline-left::before {
+  right: -8px;
+}
+
+.timeline-right::before {
+  left: -8px;
 }
 
 .timeline-item[data-item-type="post"]::before {
   background-color: #0d6efd;
+  border: 3px solid white;
 }
 
 .timeline-item[data-item-type="milestone"]::before {
   background-color: #198754;
+  border: 3px solid white;
 }
 
-.timeline {
-  margin-left: 30px;
+.timeline-left .card {
+  margin-right: 0;
+}
+
+.timeline-right .card {
+  margin-left: 0;
 }
 
 .timeline-content {
@@ -193,5 +225,29 @@
 
 .timeline-date .badge {
   font-size: 0.9rem;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .timeline::after {
+    left: 31px;
+  }
+  
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+    text-align: left !important;
+    left: 0 !important;
+  }
+  
+  .timeline-item::before {
+    left: 23px !important;
+  }
+  
+  .timeline-left .card,
+  .timeline-right .card {
+    margin: 0;
+  }
 }
 </style>
