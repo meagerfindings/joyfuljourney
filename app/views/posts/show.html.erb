@@ -70,6 +70,9 @@
               <p class="lead"><%= simple_format(@post.body) %></p>
             </div>
             
+            <!-- Reactions Section -->
+            <%= render 'reactions/reactions' %>
+            
             <% if @post.milestones.any? %>
               <div class="border-top pt-4 mt-4">
                 <h6 class="text-muted mb-3">

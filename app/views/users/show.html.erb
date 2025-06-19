@@ -11,6 +11,10 @@
   <%= link_to "#{@user.post_count} Posts", "/users/#{@user.id}/posts" %>
 </div>
 
+<div id="relationships-link">
+  <%= link_to "Family Relationships", user_relationships_path(@user), class: "btn btn-outline-primary" %>
+</div>
+
 <div>
   <%= link_to 'Edit User', edit_user_path(@user) %>
 </div>
