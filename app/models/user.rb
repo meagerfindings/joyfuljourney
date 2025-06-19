@@ -14,6 +14,10 @@ class User < ApplicationRecord
   has_and_belongs_to_many :tagged_posts, class_name: 'Post'
   has_many :milestones, as: :milestoneable, dependent: :destroy
   has_many :created_milestones, class_name: 'Milestone', foreign_key: 'created_by_user_id', dependent: :destroy
+  
+  has_many :relationships, dependent: :destroy
+  has_many :inverse_relationships, class_name: 'Relationship', foreign_key: 'related_user_id', dependent: :destroy
+  has_many :related_users, through: :relationships, source: :related_user
   has_secure_password
 
   enum role: %w[default manager admin]
@@ -58,6 +62,28 @@ class User < ApplicationRecord
     return User.none unless family
 
     family.users.where.not(id:)
+  end
+
+  def all_related_users
+    User.joins("LEFT JOIN relationships ON relationships.related_user_id = users.id")
+        .where("relationships.user_id = ? OR users.id IN (?)", id, related_users.pluck(:id))
+        .where.not(id: id)
+        .distinct
+  end
+
+  def related_posts
+    Post.joins(:user)
+        .where(users: { id: related_users.pluck(:id) })
+        .where(private: false)
+        .order(created_at: :desc)
+  end
+
+  def relationship_with(other_user)
+    relationships.find_by(related_user: other_user)
+  end
+
+  def relationship_type_with(other_user)
+    relationship_with(other_user)&.relationship_type
   end
 
   private

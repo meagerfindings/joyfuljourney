@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_19_042504) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_19_141151) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,6 +83,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_19_042504) do
     t.index ["user_id", "post_id"], name: "index_posts_users_on_user_id_and_post_id"
   end
 
+  create_table "relationships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "related_user_id", null: false
+    t.string "relationship_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["related_user_id"], name: "index_relationships_on_related_user_id"
+    t.index ["relationship_type"], name: "index_relationships_on_relationship_type"
+    t.index ["user_id", "related_user_id"], name: "index_relationships_on_user_id_and_related_user_id", unique: true
+    t.index ["user_id"], name: "index_relationships_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "first_name"
     t.string "middle_name"
@@ -103,5 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_19_042504) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "milestones", "users", column: "created_by_user_id"
   add_foreign_key "posts", "users"
+  add_foreign_key "relationships", "users"
+  add_foreign_key "relationships", "users", column: "related_user_id"
   add_foreign_key "users", "families"
 end
