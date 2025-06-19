@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :tagged_posts, class_name: 'Post'
   has_many :milestones, as: :milestoneable, dependent: :destroy
   has_many :created_milestones, class_name: 'Milestone', foreign_key: 'created_by_user_id', dependent: :destroy
+  has_many :reactions, dependent: :destroy
   has_secure_password
 
   enum role: %w[default manager admin]

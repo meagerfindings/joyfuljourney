@@ -97,6 +97,23 @@
                 </div>
                 
                 <div class="card-footer bg-transparent border-0 pt-0">
+                  <!-- Quick Reactions Summary -->
+                  <% if post.total_reactions > 0 %>
+                    <div class="mb-3">
+                      <div class="d-flex flex-wrap gap-1 mb-2">
+                        <% post.reaction_counts.each do |reaction_type, count| %>
+                          <% reaction = Reaction.new(reaction_type: reaction_type) %>
+                          <span class="badge bg-light text-dark border">
+                            <%= reaction.emoji %> <%= count %>
+                          </span>
+                        <% end %>
+                      </div>
+                      <small class="text-muted">
+                        <%= pluralize(post.total_reactions, 'reaction') %>
+                      </small>
+                    </div>
+                  <% end %>
+                  
                   <%= link_to "Read Full Memory →", post, 
                       class: "btn btn-outline-primary btn-sm w-100", 
                       data: { turbo_frame: "_top" } %>
