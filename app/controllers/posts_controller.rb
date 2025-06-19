@@ -68,7 +68,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :private, tagged_user_ids: [])
+    params.require(:post).permit(:title, :body, :private, tagged_user_ids: [], photos: [], videos: [], audio_recordings: [])
   end
 
   def visible_posts_for_user(user)
