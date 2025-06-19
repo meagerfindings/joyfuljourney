@@ -1,0 +1,113 @@
+<div class="border-top pt-4 mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="text-muted mb-0">
+      <i class="bi bi-emoji-smile me-1"></i>
+      Reactions
+      <% if post.total_reactions > 0 %>
+        <span class="badge bg-secondary bg-opacity-10 text-secondary ms-2">
+          <%= pluralize(post.total_reactions, 'reaction') %>
+        </span>
+      <% end %>
+    </h6>
+  </div>
+
+  <!-- Reaction Summary -->
+  <% if post.reaction_counts.any? %>
+    <div class="mb-3">
+      <div class="d-flex flex-wrap gap-2">
+        <% post.reaction_counts.each do |reaction_type, count| %>
+          <% reaction = Reaction.new(reaction_type: reaction_type) %>
+          <span class="badge bg-light text-dark border px-3 py-2">
+            <%= reaction.emoji %> <%= count %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Add Reaction Buttons -->
+  <% if current_user %>
+    <div class="mb-3">
+      <div class="btn-group-sm d-flex flex-wrap gap-2" role="group">
+        <% Reaction::REACTION_TYPES.each do |reaction_type| %>
+          <% reaction = Reaction.new(reaction_type: reaction_type) %>
+          <% user_reaction = post.user_reaction(current_user) %>
+          <% is_selected = user_reaction&.reaction_type == reaction_type %>
+          
+          <%= form_with(
+                model: [post, post.reactions.build], 
+                url: post_reactions_path(post),
+                local: true,
+                class: "d-inline"
+              ) do |form| %>
+            <%= form.hidden_field :reaction_type, value: reaction_type %>
+            <%= form.submit(
+                  "#{reaction.emoji} #{reaction_type.humanize}",
+                  class: "btn #{'btn-primary' if is_selected} #{'btn-outline-secondary' unless is_selected} btn-sm",
+                  data: { 
+                    confirm: is_selected ? "Remove your #{reaction_type} reaction?" : nil
+                  }
+                ) %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Remove Reaction Button -->
+    <% if post.user_reaction(current_user) %>
+      <div class="mb-3">
+        <%= form_with(
+              model: [post, post.user_reaction(current_user)], 
+              url: post_reaction_path(post, post.user_reaction(current_user)),
+              method: :delete,
+              local: true,
+              class: "d-inline"
+            ) do |form| %>
+          <%= form.submit(
+                "Remove Reaction", 
+                class: "btn btn-outline-danger btn-sm",
+                data: { confirm: "Remove your reaction?" }
+              ) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-1"></i>
+      <%= link_to "Log in", login_path, class: "alert-link" %> to react to this post.
+    </div>
+  <% end %>
+
+  <!-- Recent Reactions List -->
+  <% if post.reactions.any? %>
+    <div class="mt-4">
+      <h6 class="text-muted mb-2">Recent Reactions:</h6>
+      <div class="list-group list-group-flush">
+        <% post.reactions.includes(:user).recent.limit(5).each do |reaction| %>
+          <div class="list-group-item border-0 px-0 py-2">
+            <div class="d-flex align-items-center">
+              <div class="me-2">
+                <%= reaction.emoji %>
+              </div>
+              <div class="flex-grow-1">
+                <strong><%= reaction.user.name %></strong>
+                reacted with <%= reaction.display_name.downcase %>
+              </div>
+              <small class="text-muted">
+                <%= time_ago_in_words(reaction.created_at) %> ago
+              </small>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <% if post.reactions.count > 5 %>
+        <div class="text-center mt-2">
+          <small class="text-muted">
+            And <%= pluralize(post.reactions.count - 5, 'other reaction') %>...
+          </small>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

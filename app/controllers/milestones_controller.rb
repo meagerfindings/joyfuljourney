@@ -34,6 +34,12 @@ class MilestonesController < ApplicationController
     @milestone.created_by_user = current_user
 
     if @milestone.save
+      # Track activity
+      ActivityService.track_milestone_activity(@milestone, :milestone_created)
+      
+      # Send notifications
+      NotificationService.create_milestone_notification(@milestone, :milestone_created)
+      
       redirect_to @milestone, notice: 'Milestone was successfully created.'
     else
       @milestone_types = Milestone::MILESTONE_TYPES
@@ -47,6 +53,12 @@ class MilestonesController < ApplicationController
 
   def update
     if @milestone.update(milestone_params)
+      # Track activity
+      ActivityService.track_milestone_activity(@milestone, :milestone_updated)
+      
+      # Send notifications
+      NotificationService.create_milestone_notification(@milestone, :milestone_updated)
+      
       redirect_to @milestone, notice: 'Milestone was successfully updated.'
     else
       @milestone_types = Milestone::MILESTONE_TYPES

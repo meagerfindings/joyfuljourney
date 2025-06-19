@@ -23,6 +23,10 @@ class FamiliesController < ApplicationController
     if @family.save
       current_user.update(family: @family)
       current_user.reload  # Reload to ensure family association is fresh
+      
+      # Track activity
+      ActivityService.track_family_activity(@family, current_user, :family_joined)
+      
       redirect_to @family, notice: 'Family was successfully created.'
     else
       render :new, status: :unprocessable_entity

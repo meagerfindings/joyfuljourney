@@ -20,6 +20,9 @@ class UsersController < ApplicationController
 
     return render :new, status: :unprocessable_entity unless @user.save
 
+    # Track user creation activity
+    ActivityService.track_user_activity(@user, :user_created)
+
     if @user.claimed # newly created and claimed/registered user
       session[:user_id] = @user.id
       flash[:success] = "Welcome, #{@user.name}!"
@@ -32,7 +35,18 @@ class UsersController < ApplicationController
   def edit; end
 
   def update
+    old_family = @user.family
+    
     if @user.update(user_params)
+      # Check if user joined a new family
+      if @user.family && @user.family != old_family
+        # Track family join activity
+        ActivityService.track_family_activity(@user.family, @user, :family_joined)
+        
+        # Send notifications to existing family members
+        NotificationService.create_family_join_notification(@user, @user.family)
+      end
+      
       redirect_to @user
     else
       render :edit, status: :unprocessable_entity
@@ -80,6 +94,11 @@ class UsersController < ApplicationController
     if params[:user][:claimed]
       permitted_params << :username
       permitted_params << :password
+    end
+
+    # Allow family_id for managers and admins
+    if current_user&.manager? || current_user&.admin?
+      permitted_params << :family_id
     end
 
     params.require(:user).permit(permitted_params)

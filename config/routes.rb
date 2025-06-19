@@ -1,10 +1,21 @@
 Rails.application.routes.draw do
+  resources :activities, only: [:index]
+  resources :notifications, only: [:index, :show] do
+    member do
+      patch :mark_as_read
+    end
+    collection do
+      patch :mark_all_as_read
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
   root 'welcome#index'
 
-  resources :posts
+  resources :posts do
+    resources :reactions, only: [:create, :destroy]
+  end
   resources :families
   resources :milestones
   resources :timeline, only: [:index]

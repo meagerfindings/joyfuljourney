@@ -14,6 +14,10 @@ class User < ApplicationRecord
   has_and_belongs_to_many :tagged_posts, class_name: 'Post'
   has_many :milestones, as: :milestoneable, dependent: :destroy
   has_many :created_milestones, class_name: 'Milestone', foreign_key: 'created_by_user_id', dependent: :destroy
+  has_many :reactions, dependent: :destroy
+  has_many :sent_notifications, class_name: 'Notification', foreign_key: 'user_id', dependent: :destroy
+  has_many :notifications, as: :recipient, dependent: :destroy
+  has_many :activities, dependent: :destroy
   has_secure_password
 
   enum role: %w[default manager admin]
@@ -58,6 +62,18 @@ class User < ApplicationRecord
     return User.none unless family
 
     family.users.where.not(id:)
+  end
+
+  def unread_notifications_count
+    notifications.unread.count
+  end
+
+  def recent_notifications(limit = 10)
+    notifications.recent.limit(limit)
+  end
+
+  def mark_all_notifications_as_read!
+    notifications.unread.update_all(read_at: Time.current)
   end
 
   private

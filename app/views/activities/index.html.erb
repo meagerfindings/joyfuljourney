@@ -1,0 +1,52 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h3 mb-4">
+        <i class="bi bi-activity me-2"></i>
+        Activity Feed
+        <% if current_user.family %>
+          <small class="text-muted">• <%= current_user.family.name %> Family</small>
+        <% end %>
+      </h1>
+
+      <% if @activities.any? %>
+        <% @grouped_activities.each do |date, activities| %>
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <i class="bi bi-calendar3 me-2"></i>
+                <%= date == Date.current ? "Today" : date.strftime("%B %d, %Y") %>
+                <span class="badge bg-secondary ms-2"><%= activities.count %></span>
+              </h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="list-group list-group-flush">
+                <% activities.each do |activity| %>
+                  <%= render 'activity_item', activity: activity %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-center py-5">
+          <i class="bi bi-activity display-1 text-muted"></i>
+          <h3 class="text-muted mt-3">No recent activity</h3>
+          <p class="text-muted">
+            <% if current_user.family %>
+              Activity from your family members will appear here.
+            <% else %>
+              Your activity will appear here. Consider joining a family to see more activity!
+            <% end %>
+          </p>
+          <div class="mt-4">
+            <%= link_to "Create a Post", new_post_path, class: "btn btn-primary me-2" %>
+            <% if current_user.family.nil? %>
+              <%= link_to "Create Family", new_family_path, class: "btn btn-outline-primary" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
