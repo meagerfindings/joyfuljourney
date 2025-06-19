@@ -36,6 +36,18 @@ class PostsController < ApplicationController
     @post.user = current_user
 
     if validate_tagged_users && @post.save
+      # Track activity
+      ActivityService.track_post_activity(@post, :post_created)
+      
+      # Send notifications
+      NotificationService.create_post_notification(@post, :post_created)
+      
+      # Handle tagged user notifications
+      if @post.tagged_users.any?
+        NotificationService.create_tagging_notification(@post, @post.tagged_users)
+        ActivityService.track_tagging_activity(@post, current_user, @post.tagged_users)
+      end
+      
       redirect_to @post, notice: 'Memory was successfully created! 🎉'
     else
       render :new, status: :unprocessable_entity
@@ -45,7 +57,22 @@ class PostsController < ApplicationController
   def edit; end
 
   def update
+    old_tagged_users = @post.tagged_users.to_a
+    
     if validate_tagged_users && @post.update(post_params)
+      # Track activity
+      ActivityService.track_post_activity(@post, :post_updated)
+      
+      # Send notifications for updates
+      NotificationService.create_post_notification(@post, :post_updated)
+      
+      # Handle tagged user notifications for new tags
+      new_tagged_users = @post.tagged_users.to_a - old_tagged_users
+      if new_tagged_users.any?
+        NotificationService.create_tagging_notification(@post, new_tagged_users)
+        ActivityService.track_tagging_activity(@post, current_user, new_tagged_users)
+      end
+      
       redirect_to @post, notice: 'Memory was successfully updated! ✨'
     else
       render :edit, status: :unprocessable_entity

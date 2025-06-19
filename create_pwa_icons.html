@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Icon Generator</title>
+</head>
+<body>
+    <h2>PWA Icon Generator for Joyful Journey</h2>
+    <p>This page generates simple PWA icons. Right-click and save the images below:</p>
+    
+    <div>
+        <h3>192x192 Icon</h3>
+        <canvas id="icon192" width="192" height="192" style="border: 1px solid #ccc;"></canvas>
+        <br><button onclick="downloadIcon('icon192', 'android-chrome-192x192.png')">Download 192x192</button>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <h3>512x512 Icon</h3>
+        <canvas id="icon512" width="512" height="512" style="border: 1px solid #ccc;"></canvas>
+        <br><button onclick="downloadIcon('icon512', 'android-chrome-512x512.png')">Download 512x512</button>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Main title
+            ctx.font = `bold ${size/8}px Arial`;
+            ctx.fillText('JJ', size/2, size/2 - size/16);
+            
+            // Subtitle
+            ctx.font = `${size/16}px Arial`;
+            ctx.fillText('Joyful Journey', size/2, size/2 + size/12);
+            
+            // Add border radius effect by clipping
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size/16);
+            ctx.fill();
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Generate icons on page load
+        createIcon('icon192', 192);
+        createIcon('icon512', 512);
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<div class="list-group-item">
+  <div class="d-flex">
+    <div class="me-3">
+      <i class="<%= activity.icon_class %> <%= activity.color_class %> fs-4"></i>
+    </div>
+    <div class="flex-grow-1">
+      <div class="d-flex w-100 justify-content-between">
+        <h6 class="mb-1">
+          <%= link_to activity.user.name, user_path(activity.user), class: "text-decoration-none fw-bold" %>
+          <%= activity.description %>
+        </h6>
+        <small class="text-muted">
+          <%= activity.time_ago %>
+        </small>
+      </div>
+      
+      <% if activity.trackable.respond_to?(:title) && activity.trackable.title.present? %>
+        <p class="mb-1">
+          "<%= link_to activity.trackable.title, activity.path, class: "text-decoration-none" %>"
+        </p>
+      <% end %>
+      
+      <% if activity.data_hash.any? %>
+        <small class="text-muted">
+          <% case activity.activity_type %>
+          <% when Activity::TYPES[:post_reacted] %>
+            <i class="bi bi-heart-fill text-danger me-1"></i>
+            Reacted with <%= activity.data_hash['reaction_type'] %>
+          <% when Activity::TYPES[:user_tagged] %>
+            <i class="bi bi-at me-1"></i>
+            Tagged <%= activity.data_hash['tagged_user_names']&.join(', ') %>
+          <% when Activity::TYPES[:family_joined] %>
+            <i class="bi bi-people me-1"></i>
+            Joined <%= activity.data_hash['family_name'] %>
+          <% end %>
+        </small>
+      <% end %>
+    </div>
+  </div>
+</div>

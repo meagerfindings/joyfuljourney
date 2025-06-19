@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_19_163700) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_19_214304) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,35 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_19_163700) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "activities", force: :cascade do |t|
+    t.bigint "user_id", null: false, comment: "User who performed the activity"
+    t.string "trackable_type", null: false
+    t.bigint "trackable_id", null: false, comment: "The object being tracked"
+    t.string "activity_type", null: false, comment: "Type of activity (created, updated, reacted, etc.)"
+    t.text "data", comment: "Additional JSON data for the activity"
+    t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false, comment: "When the activity occurred"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_type"], name: "idx_activities_type"
+    t.index ["occurred_at"], name: "idx_activities_occurred_at"
+    t.index ["trackable_type", "trackable_id", "occurred_at"], name: "idx_activities_trackable_time"
+    t.index ["trackable_type", "trackable_id"], name: "idx_activities_trackable"
+    t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable"
+    t.index ["user_id", "occurred_at"], name: "idx_activities_user_time"
+    t.index ["user_id"], name: "index_activities_on_user_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.text "body", null: false
+    t.bigint "user_id", null: false
+    t.bigint "post_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "created_at"], name: "index_comments_on_post_id_and_created_at"
+    t.index ["post_id"], name: "index_comments_on_post_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
   create_table "families", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -64,6 +93,31 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_19_163700) do
     t.index ["milestone_type"], name: "index_milestones_on_milestone_type"
     t.index ["milestoneable_type", "milestoneable_id"], name: "index_milestones_on_milestoneable"
     t.index ["milestoneable_type", "milestoneable_id"], name: "index_milestones_on_milestoneable_type_and_milestoneable_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false, comment: "User who triggered the notification"
+    t.string "recipient_type", null: false
+    t.bigint "recipient_id", null: false, comment: "User or group receiving the notification"
+    t.string "notifiable_type", null: false
+    t.bigint "notifiable_id", null: false, comment: "The object that triggered the notification"
+    t.string "notification_type", null: false, comment: "Type of notification (post_created, milestone_reached, etc.)"
+    t.string "title", null: false
+    t.text "message"
+    t.datetime "read_at", comment: "When the notification was read"
+    t.datetime "email_sent_at", comment: "When email notification was sent"
+    t.text "data", comment: "Additional JSON data for the notification"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "idx_notifications_created_at"
+    t.index ["notifiable_type", "notifiable_id"], name: "idx_notifications_notifiable"
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["notification_type"], name: "idx_notifications_type"
+    t.index ["read_at"], name: "idx_notifications_read_at"
+    t.index ["recipient_type", "recipient_id", "read_at"], name: "idx_notifications_recipient_read"
+    t.index ["recipient_type", "recipient_id"], name: "idx_notifications_recipient"
+    t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -125,7 +179,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_19_163700) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activities", "users"
+  add_foreign_key "comments", "posts"
+  add_foreign_key "comments", "users"
   add_foreign_key "milestones", "users", column: "created_by_user_id"
+  add_foreign_key "notifications", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "reactions", "posts"
   add_foreign_key "reactions", "users"

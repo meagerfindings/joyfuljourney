@@ -1,0 +1,39 @@
+<div class="list-group-item list-group-item-action <%= 'bg-light' if notification.unread? %>">
+  <div class="d-flex w-100 justify-content-between">
+    <div class="d-flex">
+      <div class="me-3">
+        <i class="<%= notification.icon_class %> <%= notification.color_class %> fs-4"></i>
+      </div>
+      <div class="flex-grow-1">
+        <%= link_to notification_path(notification), class: "text-decoration-none" do %>
+          <h6 class="mb-1 <%= 'fw-bold' if notification.unread? %>">
+            <%= notification.title %>
+          </h6>
+          <p class="mb-1 text-muted">
+            <%= notification.message %>
+          </p>
+        <% end %>
+        <small class="text-muted">
+          <i class="bi bi-person-circle me-1"></i>
+          <%= notification.user.name %>
+          •
+          <i class="bi bi-clock me-1"></i>
+          <%= time_ago_in_words(notification.created_at) %> ago
+        </small>
+      </div>
+    </div>
+    <div class="d-flex align-items-start">
+      <% if notification.unread? %>
+        <%= link_to mark_as_read_notification_path(notification),
+                    method: :patch,
+                    class: "btn btn-sm btn-outline-primary me-2",
+                    title: "Mark as read" do %>
+          <i class="bi bi-check2"></i>
+        <% end %>
+        <span class="badge bg-primary">New</span>
+      <% elsif show_read_status %>
+        <span class="badge bg-secondary">Read</span>
+      <% end %>
+    </div>
+  </div>
+</div>

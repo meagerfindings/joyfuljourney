@@ -9,7 +9,12 @@ class ReactionsController < ApplicationController
     
     if @reaction
       # Update existing reaction
+      old_reaction_type = @reaction.reaction_type
       @reaction.update(reaction_type: reaction_params[:reaction_type])
+      
+      # Track activity for updated reaction
+      ActivityService.track_reaction_activity(@reaction)
+      
       flash[:notice] = 'Reaction updated!'
     else
       # Create new reaction
@@ -17,6 +22,12 @@ class ReactionsController < ApplicationController
       @reaction.user = current_user
       
       if @reaction.save
+        # Track activity
+        ActivityService.track_reaction_activity(@reaction)
+        
+        # Send notification to post author
+        NotificationService.create_reaction_notification(@reaction)
+        
         flash[:notice] = 'Reaction added!'
       else
         flash[:alert] = "Error adding reaction: #{@reaction.errors.full_messages.join(', ')}"
