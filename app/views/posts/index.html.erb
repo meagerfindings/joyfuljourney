@@ -97,6 +97,35 @@
                 </div>
                 
                 <div class="card-footer bg-transparent border-0 pt-0">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-3">
+                      <small class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        <%= post.created_at.strftime("%B %d, %Y") %>
+                      </small>
+                      <% if post.total_reactions > 0 %>
+                        <small class="text-muted">
+                          <% if post.most_popular_reaction %>
+                            <%= Reaction::REACTION_EMOJIS[post.most_popular_reaction] %>
+                          <% else %>
+                            <i class="bi bi-heart me-1"></i>
+                          <% end %>
+                          <%= pluralize(post.total_reactions, 'reaction') %>
+                        </small>
+                      <% end %>
+                    </div>
+                    <div class="reaction-preview d-flex gap-1">
+                      <% post.reaction_counts.first(3).each do |reaction_type, count| %>
+                        <span class="badge bg-light text-dark d-flex align-items-center gap-1" style="font-size: 0.7rem;">
+                          <%= Reaction::REACTION_EMOJIS[reaction_type] %>
+                          <span><%= count %></span>
+                        </span>
+                      <% end %>
+                      <% if post.reaction_counts.size > 3 %>
+                        <span class="badge bg-secondary" style="font-size: 0.7rem;">+<%= post.reaction_counts.size - 3 %></span>
+                      <% end %>
+                    </div>
+                  </div>
                   <%= link_to "Read Full Memory →", post, 
                       class: "btn btn-outline-primary btn-sm w-100", 
                       data: { turbo_frame: "_top" } %>

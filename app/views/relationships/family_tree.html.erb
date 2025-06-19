@@ -1,0 +1,176 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h2 class="mb-0">
+            <i class="bi bi-diagram-3-fill me-2"></i>
+            <%= @user.name %>'s Family Tree
+          </h2>
+          <%= link_to user_relationships_path(@user), class: "btn btn-light btn-sm" do %>
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to Relationships
+          <% end %>
+        </div>
+        
+        <div class="card-body">
+          <div id="family-tree-container" style="height: 600px; overflow: auto;">
+            <!-- D3.js Family Tree will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .node {
+    cursor: pointer;
+  }
+  
+  .node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+  }
+  
+  .node text {
+    font: 12px sans-serif;
+  }
+  
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+  }
+  
+  .node.highlight circle {
+    fill: #ffeb3b;
+  }
+  
+  .tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font: 12px sans-serif;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+</style>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const treeData = <%= @family_tree_data.to_json.html_safe %>;
+  
+  // Set dimensions and margins
+  const margin = {top: 20, right: 90, bottom: 30, left: 90};
+  const width = document.getElementById('family-tree-container').offsetWidth - margin.left - margin.right;
+  const height = 600 - margin.top - margin.bottom;
+  
+  // Create SVG
+  const svg = d3.select("#family-tree-container")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+  
+  // Create tree layout
+  const treeLayout = d3.tree()
+    .size([height, width]);
+  
+  // Convert flat data to hierarchical
+  function buildHierarchy(data) {
+    const hierarchy = {
+      id: data.id,
+      name: data.name,
+      birthdate: data.birthdate,
+      children: []
+    };
+    
+    // Add children
+    if (data.relationships && data.relationships.children) {
+      hierarchy.children = data.relationships.children;
+    }
+    
+    // Add parents as a separate branch if needed
+    if (data.relationships && data.relationships.parents && data.relationships.parents.length > 0) {
+      // For visualization, we'll show the current person as the root
+      // and show relationships radiating out
+    }
+    
+    return hierarchy;
+  }
+  
+  const root = d3.hierarchy(buildHierarchy(treeData));
+  
+  // Generate tree
+  const tree = treeLayout(root);
+  
+  // Create links
+  const link = svg.selectAll(".link")
+    .data(tree.links())
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("d", d3.linkHorizontal()
+      .x(d => d.y)
+      .y(d => d.x));
+  
+  // Create nodes
+  const node = svg.selectAll(".node")
+    .data(tree.descendants())
+    .enter().append("g")
+    .attr("class", "node")
+    .attr("transform", d => `translate(${d.y},${d.x})`);
+  
+  // Add circles
+  node.append("circle")
+    .attr("r", 10)
+    .style("fill", d => d.children ? "#fff" : "#4CAF50");
+  
+  // Add labels
+  node.append("text")
+    .attr("dy", ".35em")
+    .attr("x", d => d.children ? -13 : 13)
+    .style("text-anchor", d => d.children ? "end" : "start")
+    .text(d => d.data.name);
+  
+  // Add tooltip
+  const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+  
+  node.on("mouseover", function(event, d) {
+    tooltip.transition()
+      .duration(200)
+      .style("opacity", .9);
+    
+    let tooltipText = `<strong>${d.data.name}</strong>`;
+    if (d.data.birthdate) {
+      tooltipText += `<br>Born: ${new Date(d.data.birthdate).toLocaleDateString()}`;
+    }
+    
+    tooltip.html(tooltipText)
+      .style("left", (event.pageX + 10) + "px")
+      .style("top", (event.pageY - 28) + "px");
+  })
+  .on("mouseout", function(d) {
+    tooltip.transition()
+      .duration(500)
+      .style("opacity", 0);
+  })
+  .on("click", function(event, d) {
+    if (d.data.id !== <%= @user.id %>) {
+      window.location.href = `/users/${d.data.id}`;
+    }
+  });
+  
+  // Highlight current user
+  node.filter(d => d.data.id === <%= @user.id %>)
+    .classed("highlight", true);
+});
+</script>

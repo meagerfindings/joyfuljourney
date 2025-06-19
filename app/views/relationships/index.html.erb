@@ -1,0 +1,106 @@
+<div class="container py-4">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h2 class="mb-0">
+            <i class="bi bi-people-fill me-2"></i>
+            <%= @user.name %>'s Family Relationships
+          </h2>
+          <% if current_user == @user || current_user.manager_or_admin? %>
+            <%= link_to new_user_relationship_path(@user), class: "btn btn-light btn-sm" do %>
+              <i class="bi bi-plus-circle me-1"></i>
+              Add Relationship
+            <% end %>
+          <% end %>
+        </div>
+        
+        <div class="card-body">
+          <!-- Current Relationships -->
+          <% if @relationships.any? %>
+            <div class="mb-4">
+              <h4 class="mb-3">Current Relationships</h4>
+              <div class="row g-3">
+                <% @relationships.each do |relationship| %>
+                  <div class="col-md-6">
+                    <div class="card h-100 border-light">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                          <div>
+                            <h6 class="card-title mb-1">
+                              <% if relationship.user == @user %>
+                                <%= link_to relationship.related_user.name, user_path(relationship.related_user), class: "text-decoration-none" %>
+                              <% else %>
+                                <%= link_to relationship.user.name, user_path(relationship.user), class: "text-decoration-none" %>
+                              <% end %>
+                            </h6>
+                            <p class="text-muted mb-0">
+                              <small>
+                                <i class="bi bi-diagram-3 me-1"></i>
+                                <%= relationship.relationship_display_name %>
+                              </small>
+                            </p>
+                          </div>
+                          <% if current_user == @user || current_user.manager_or_admin? %>
+                            <%= link_to user_relationship_path(@user, relationship), 
+                                method: :delete, 
+                                data: { confirm: "Remove this relationship?" }, 
+                                class: "btn btn-sm btn-outline-danger" do %>
+                              <i class="bi bi-x-lg"></i>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              No relationships have been added yet.
+            </div>
+          <% end %>
+          
+          <!-- Suggested Relationships -->
+          <% if @suggested_relationships.any? %>
+            <div class="border-top pt-4">
+              <h4 class="mb-3">Suggested Relationships</h4>
+              <p class="text-muted">Based on age and family connections, these relationships might apply:</p>
+              <div class="list-group">
+                <% @suggested_relationships.each do |suggestion| %>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-0"><%= suggestion[:user].name %></h6>
+                      <small class="text-muted">
+                        Suggested: <%= suggestion[:suggested_type].humanize %>
+                      </small>
+                    </div>
+                    <% if current_user == @user || current_user.manager_or_admin? %>
+                      <%= link_to new_user_relationship_path(@user, 
+                          related_user_id: suggestion[:user].id, 
+                          relationship_type: suggestion[:suggested_type]), 
+                          class: "btn btn-sm btn-outline-primary" do %>
+                        <i class="bi bi-plus me-1"></i>
+                        Add
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          
+          <!-- Family Tree Link -->
+          <div class="border-top pt-4 mt-4 text-center">
+            <%= link_to family_tree_user_relationships_path(@user), class: "btn btn-primary" do %>
+              <i class="bi bi-diagram-3-fill me-2"></i>
+              View Family Tree
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

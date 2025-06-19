@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'welcome#index'
 
-  resources :posts
+  resources :posts do
+    resources :reactions, only: [:create, :destroy]
+  end
   resources :families
   resources :milestones
   resources :timeline, only: [:index]
@@ -12,6 +14,12 @@ Rails.application.routes.draw do
   resources :users do
     resources :posts, only: [:index]
     resources :milestones, only: [:index, :show]
+    resources :relationships, except: [:edit, :update] do
+      collection do
+        get :family_tree
+        get :suggestions
+      end
+    end
   end
   resources :families do
     resources :milestones, only: [:index, :show]
