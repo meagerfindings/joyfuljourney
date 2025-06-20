@@ -18,9 +18,28 @@
                     <%= link_to truncate(item.title, length: 30), post_path(item), class: "text-decoration-none" %>
                   </div>
                 </div>
-                <small class="text-muted">
+                <small class="text-muted d-block">
                   by <%= item.user.first_name || item.user.username %> • <%= time_ago_in_words(item.created_at) %> ago
                 </small>
+                <% if item.photos.attached? || item.videos.attached? || item.audio_recordings.attached? %>
+                  <div class="mt-1">
+                    <% if item.photos.attached? %>
+                      <span class="badge bg-light text-primary me-1">
+                        <i class="bi bi-images"></i> <%= item.photos.count %>
+                      </span>
+                    <% end %>
+                    <% if item.videos.attached? %>
+                      <span class="badge bg-light text-primary me-1">
+                        <i class="bi bi-camera-video"></i> <%= item.videos.count %>
+                      </span>
+                    <% end %>
+                    <% if item.audio_recordings.attached? %>
+                      <span class="badge bg-light text-primary">
+                        <i class="bi bi-mic"></i> <%= item.audio_recordings.count %>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
               <% elsif item.is_a?(Milestone) %>
                 <div class="d-flex align-items-center mb-1">
                   <i class="bi bi-trophy text-success me-2"></i>

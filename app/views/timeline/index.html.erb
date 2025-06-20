@@ -63,6 +63,38 @@
                         </p>
                         <div class="timeline-content">
                           <p class="card-text"><%= truncate(item.body, length: 200) %></p>
+                          <% if item.photos.attached? %>
+                            <div class="mt-2 mb-2">
+                              <div class="row g-1">
+                                <% item.photos.first(4).each_with_index do |photo, photo_index| %>
+                                  <div class="col-3">
+                                    <%= link_to photo, target: "_blank", class: "d-block" do %>
+                                      <%= image_tag photo, class: "img-fluid rounded", style: "height: 60px; width: 100%; object-fit: cover; cursor: pointer;" %>
+                                    <% end %>
+                                  </div>
+                                <% end %>
+                              </div>
+                              <% if item.photos.count > 4 %>
+                                <small class="text-muted">
+                                  <i class="bi bi-images me-1"></i>+<%= item.photos.count - 4 %> more
+                                </small>
+                              <% end %>
+                            </div>
+                          <% end %>
+                          <% if item.videos.attached? %>
+                            <div class="mt-1">
+                              <small class="text-muted">
+                                <i class="bi bi-camera-video me-1"></i><%= pluralize(item.videos.count, 'video') %>
+                              </small>
+                            </div>
+                          <% end %>
+                          <% if item.audio_recordings.attached? %>
+                            <div class="mt-1">
+                              <small class="text-muted">
+                                <i class="bi bi-mic me-1"></i><%= pluralize(item.audio_recordings.count, 'audio recording') %>
+                              </small>
+                            </div>
+                          <% end %>
                           <% if item.tagged_users.any? %>
                             <div class="mt-2">
                               <small class="text-muted">Tagged: </small>
@@ -219,8 +251,7 @@
 }
 
 .timeline-content {
-  max-height: 150px;
-  overflow: hidden;
+  max-height: none;
 }
 
 .timeline-date .badge {

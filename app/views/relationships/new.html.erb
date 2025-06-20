@@ -1,0 +1,55 @@
+<% content_for :title, "Add New Relationship" %>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2>Add New Relationship</h2>
+        </div>
+        <div class="card-body">
+          <%= form_with model: @relationship, local: true do |form| %>
+            <% if @relationship.errors.any? %>
+              <div class="alert alert-danger">
+                <h4><%= pluralize(@relationship.errors.count, "error") %> prohibited this relationship from being saved:</h4>
+                <ul class="mb-0">
+                  <% @relationship.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= form.label :related_user_id, "Select User", class: "form-label" %>
+              <%= form.select :related_user_id, 
+                  options_from_collection_for_select(@users, :id, :name), 
+                  { prompt: "Choose a user..." }, 
+                  { class: "form-select" } %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :relationship_type, "Relationship Type", class: "form-label" %>
+              <%= form.select :relationship_type, 
+                  options_for_select(Relationship::RELATIONSHIP_TYPES.map { |type| [type.humanize, type] }), 
+                  { prompt: "Choose relationship type..." }, 
+                  { class: "form-select" } %>
+            </div>
+
+            <div class="mb-3">
+              <small class="form-text text-muted">
+                Note: This will create a bidirectional relationship. For example, if you select "parent", 
+                they will automatically be marked as your "child".
+              </small>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <%= link_to "Cancel", relationships_path, class: "btn btn-secondary" %>
+              <%= form.submit "Create Relationship", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
