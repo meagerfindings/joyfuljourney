@@ -1,0 +1,44 @@
+<% content_for :title, "My Relationships" %>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Relationships</h1>
+        <%= link_to "Add New Relationship", new_relationship_path, class: "btn btn-primary" %>
+      </div>
+
+      <% if @relationships.any? %>
+        <div class="row">
+          <% @relationships.each do |relationship| %>
+            <div class="col-md-6 col-lg-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title"><%= relationship.related_user.name %></h5>
+                  <p class="card-text">
+                    <span class="badge bg-secondary"><%= relationship.relationship_type.humanize %></span>
+                  </p>
+                  <p class="card-text text-muted">
+                    <small>Connected since <%= relationship.created_at.strftime("%B %Y") %></small>
+                  </p>
+                  <div class="btn-group btn-group-sm" role="group">
+                    <%= link_to "View Posts", user_posts_path(relationship.related_user), class: "btn btn-outline-primary" %>
+                    <%= link_to "Remove", relationship_path(relationship), method: :delete, 
+                        confirm: "Are you sure you want to remove this relationship?", 
+                        class: "btn btn-outline-danger" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-5">
+          <h3 class="text-muted">No relationships yet</h3>
+          <p>Start connecting with other users to see their posts in your feed.</p>
+          <%= link_to "Add Your First Relationship", new_relationship_path, class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

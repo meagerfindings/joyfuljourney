@@ -73,6 +73,24 @@
                     </div>
                   </div>
                   
+                  <% if post.photos.attached? %>
+                    <div class="mb-3">
+                      <div class="row g-2">
+                        <% post.photos.first(4).each_with_index do |photo, index| %>
+                          <div class="col-6">
+                            <%= image_tag photo, class: "img-thumbnail", style: "height: 100px; width: 100%; object-fit: cover;" %>
+                          </div>
+                        <% end %>
+                      </div>
+                      <% if post.photos.count > 4 %>
+                        <small class="text-muted mt-1 d-block">
+                          <i class="bi bi-images me-1"></i>
+                          +<%= post.photos.count - 4 %> more photos
+                        </small>
+                      <% end %>
+                    </div>
+                  <% end %>
+                  
                   <p class="card-text text-muted mb-3"><%= truncate(post.body, length: 120) %></p>
                   
                   <div class="mb-3">

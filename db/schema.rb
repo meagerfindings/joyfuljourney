@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_15_191418) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_19_141151) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "families", force: :cascade do |t|
     t.string "name", null: false
@@ -55,6 +83,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_15_191418) do
     t.index ["user_id", "post_id"], name: "index_posts_users_on_user_id_and_post_id"
   end
 
+  create_table "relationships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "related_user_id", null: false
+    t.string "relationship_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["related_user_id"], name: "index_relationships_on_related_user_id"
+    t.index ["relationship_type"], name: "index_relationships_on_relationship_type"
+    t.index ["user_id", "related_user_id"], name: "index_relationships_on_user_id_and_related_user_id", unique: true
+    t.index ["user_id"], name: "index_relationships_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "first_name"
     t.string "middle_name"
@@ -71,7 +111,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_15_191418) do
     t.index ["family_id"], name: "index_users_on_family_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "milestones", "users", column: "created_by_user_id"
   add_foreign_key "posts", "users"
+  add_foreign_key "relationships", "users"
+  add_foreign_key "relationships", "users", column: "related_user_id"
   add_foreign_key "users", "families"
 end

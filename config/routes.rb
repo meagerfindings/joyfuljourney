@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resources :milestones, only: [:index, :show]
   end
   resources :milestones
+  resources :relationships, except: [:edit, :update]
   resources :timeline, only: [:index]
   get '/timeline/truncated', to: 'timeline#show_truncated'
   

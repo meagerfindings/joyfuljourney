@@ -7,45 +7,51 @@
   </div>
   <div class="card-body">
     <% if @timeline_items.any? %>
-      <div class="timeline-truncated">
+      <div class="timeline-preview">
         <% @timeline_items.each_with_index do |item, index| %>
-          <div class="timeline-item-small mb-3 <%= 'border-bottom pb-3' unless index == @timeline_items.length - 1 %>">
-            <div class="row align-items-center">
-              <div class="col-1">
-                <% if item.is_a?(Post) %>
-                  <i class="bi bi-file-text text-primary"></i>
-                <% elsif item.is_a?(Milestone) %>
-                  <i class="bi bi-trophy text-success"></i>
-                <% end %>
-              </div>
-              <div class="col-8">
-                <% if item.is_a?(Post) %>
+          <div class="timeline-preview-item mb-3 <%= index.even? ? 'timeline-preview-left' : 'timeline-preview-right' %>" data-item-type="<%= item.class.name.downcase %>">
+            <div class="timeline-preview-content">
+              <% if item.is_a?(Post) %>
+                <div class="d-flex align-items-center mb-1">
+                  <i class="bi bi-file-text text-primary me-2"></i>
                   <div class="fw-semibold">
-                    <%= link_to truncate(item.title, length: 40), post_path(item), class: "text-decoration-none" %>
+                    <%= link_to truncate(item.title, length: 30), post_path(item), class: "text-decoration-none" %>
                   </div>
-                  <small class="text-muted">
-                    by <%= item.user.first_name || item.user.username %>
-                  </small>
-                <% elsif item.is_a?(Milestone) %>
-                  <div class="fw-semibold">
-                    <%= link_to truncate(item.title, length: 40), milestone_path(item), class: "text-decoration-none" %>
-                  </div>
-                  <small class="text-muted">
-                    <span class="badge bg-success bg-opacity-10 text-success"><%= item.milestone_type_display %></span>
-                    by <%= item.created_by_user.first_name || item.created_by_user.username %>
-                  </small>
-                <% end %>
-              </div>
-              <div class="col-3 text-end">
-                <small class="text-muted">
-                  <%= case item
-                      when Post
-                        time_ago_in_words(item.created_at) + " ago"
-                      when Milestone
-                        item.milestone_date.strftime("%b %d")
-                      end %>
+                </div>
+                <small class="text-muted d-block">
+                  by <%= item.user.first_name || item.user.username %> • <%= time_ago_in_words(item.created_at) %> ago
                 </small>
-              </div>
+                <% if item.photos.attached? || item.videos.attached? || item.audio_recordings.attached? %>
+                  <div class="mt-1">
+                    <% if item.photos.attached? %>
+                      <span class="badge bg-light text-primary me-1">
+                        <i class="bi bi-images"></i> <%= item.photos.count %>
+                      </span>
+                    <% end %>
+                    <% if item.videos.attached? %>
+                      <span class="badge bg-light text-primary me-1">
+                        <i class="bi bi-camera-video"></i> <%= item.videos.count %>
+                      </span>
+                    <% end %>
+                    <% if item.audio_recordings.attached? %>
+                      <span class="badge bg-light text-primary">
+                        <i class="bi bi-mic"></i> <%= item.audio_recordings.count %>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% elsif item.is_a?(Milestone) %>
+                <div class="d-flex align-items-center mb-1">
+                  <i class="bi bi-trophy text-success me-2"></i>
+                  <div class="fw-semibold">
+                    <%= link_to truncate(item.title, length: 30), milestone_path(item), class: "text-decoration-none" %>
+                  </div>
+                </div>
+                <small class="text-muted">
+                  <span class="badge bg-success bg-opacity-10 text-success me-1"><%= item.milestone_type_display %></span>
+                  by <%= item.created_by_user.first_name || item.created_by_user.username %> • <%= item.milestone_date.strftime("%b %d") %>
+                </small>
+              <% end %>
             </div>
           </div>
         <% end %>
@@ -59,3 +65,104 @@
     <% end %>
   </div>
 </div>
+
+<style>
+.timeline-preview {
+  position: relative;
+  padding: 20px 0;
+}
+
+.timeline-preview::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  background-color: #dee2e6;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -1px;
+  z-index: 1;
+}
+
+.timeline-preview-item {
+  position: relative;
+  width: 50%;
+  padding: 10px 20px;
+}
+
+.timeline-preview-left {
+  left: 0;
+  text-align: right;
+}
+
+.timeline-preview-right {
+  left: 50%;
+  text-align: left;
+}
+
+.timeline-preview-item::before {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 2;
+  top: 20px;
+  border: 2px solid white;
+}
+
+.timeline-preview-left::before {
+  right: -5px;
+}
+
+.timeline-preview-right::before {
+  left: -5px;
+}
+
+.timeline-preview-item[data-item-type="post"]::before {
+  background-color: #0d6efd;
+}
+
+.timeline-preview-item[data-item-type="milestone"]::before {
+  background-color: #198754;
+}
+
+.timeline-preview-content {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.timeline-preview-left .timeline-preview-content {
+  margin-right: 10px;
+}
+
+.timeline-preview-right .timeline-preview-content {
+  margin-left: 10px;
+}
+
+/* Mobile responsiveness for preview */
+@media screen and (max-width: 768px) {
+  .timeline-preview::after {
+    left: 20px;
+  }
+  
+  .timeline-preview-item {
+    width: 100%;
+    padding-left: 40px;
+    padding-right: 10px;
+    text-align: left !important;
+    left: 0 !important;
+  }
+  
+  .timeline-preview-item::before {
+    left: 15px !important;
+  }
+  
+  .timeline-preview-left .timeline-preview-content,
+  .timeline-preview-right .timeline-preview-content {
+    margin: 0;
+  }
+}
+</style>

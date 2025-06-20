@@ -68,7 +68,7 @@ class TimelineController < ApplicationController
     Post.joins(:user)
         .where(users: { family: current_user.family })
         .where(private: false)
-        .includes(:user, :tagged_users)
+        .includes(:user, :tagged_users, photos_attachments: :blob, videos_attachments: :blob, audio_recordings_attachments: :blob)
   end
 
   def filter_by_type(items, filter_type)
