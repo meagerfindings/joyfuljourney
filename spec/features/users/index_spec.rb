@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe "Users Index Page", type: :feature do
-  let(:user_1) { User.create(first_name: "Bart", last_name: "Simpson", birthdate: "April 1, 1990") }
-  let(:user_2) { User.create(first_name: "Sideshow", last_name: "Bob", birthdate: "January 1, 1960") }
+RSpec.describe 'Users Index Page', type: :feature do
+  let(:user_1) { User.create(first_name: 'Bart', last_name: 'Simpson', birthdate: 'April 1, 1990') }
+  let(:user_2) { User.create(first_name: 'Sideshow', last_name: 'Bob', birthdate: 'January 1, 1960') }
 
   before(:each) do
     DatabaseCleaner.clean_with(:truncation)
@@ -10,10 +10,10 @@ RSpec.describe "Users Index Page", type: :feature do
     user_2.touch
   end
 
-  it "can see all users and their information" do
-    visit "/users"
+  it 'can see all users and their information' do
+    visit '/users'
 
-    expect(page).to have_content("All Users")
+    expect(page).to have_content('All Users')
 
     within("#user-#{user_1.id}") do
       expect(page).to have_content(user_1.first_name)
@@ -34,15 +34,15 @@ RSpec.describe "Users Index Page", type: :feature do
     end
   end
 
-  it "displays users from most recently created to oldest" do
-    visit "/users"
+  it 'displays users from most recently created to oldest' do
+    visit '/users'
 
     users = page.all('li')
     expect(users.first).to have_content(user_2.name)
     expect(users.last).to have_content(user_1.name)
   end
 
-  it "has a link to create new users" do
+  it 'has a link to create new users' do
     visit '/users'
 
     expect(page).to have_link('Create User', href: '/users/new')

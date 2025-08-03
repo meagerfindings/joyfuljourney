@@ -1,14 +1,49 @@
-<div id="navbar">
-  <div id="navigation">
-    <%= link_to "Posts", Post %>
-    <%= link_to "Users", User %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm" data-turbo-permanent>
+  <div class="container">
+    <%= link_to "Joyful Journey", root_path, class: "navbar-brand fw-bold" %>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <%= link_to "Posts", posts_path, class: "nav-link", data: { turbo_frame: "_top" } %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Families", families_path, class: "nav-link", data: { turbo_frame: "_top" } %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Milestones", milestones_path, class: "nav-link", data: { turbo_frame: "_top" } %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Timeline", timeline_index_path, class: "nav-link", data: { turbo_frame: "_top" } %>
+        </li>
+      </ul>
+      
+      <ul class="navbar-nav">
+        <% if current_user %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <%= current_user.first_name || current_user.username %>
+            </a>
+            <ul class="dropdown-menu">
+              <li><%= link_to "Profile", user_path(current_user), class: "dropdown-item" %></li>
+              <li><%= link_to "My Posts", user_posts_path(current_user), class: "dropdown-item" %></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= link_to "Log Out", logout_path, method: :post, class: "dropdown-item", data: { turbo_method: :post } %></li>
+            </ul>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <%= link_to "Sign Up", "#{new_user_path}?claimed=true", class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Log In", login_path, class: "btn btn-outline-light ms-2" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
   </div>
-  <div id="session-options">
-    <% if current_user %>
-      <%= link_to "Log Out", logout_path, method: :post %>
-    <% else %>
-      <%= link_to "Sign Up", "#{new_user_path}?claimed=true" %>
-      <%= link_to "Log In", login_path %>
-    <% end %>
-  </div>
-</div>
+</nav>

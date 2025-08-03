@@ -1,0 +1,32 @@
+<% content_for :title, "Edit #{@family.name}" %>
+
+<div class="row">
+  <div class="col-md-6 offset-md-3">
+    <h1>Edit Family</h1>
+
+    <%= form_with model: @family, local: true do |form| %>
+      <% if @family.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <% @family.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= form.label :name, class: "form-label" %>
+        <%= form.text_field :name, class: "form-control" %>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <%= form.submit "Update Family", class: "btn btn-primary" %>
+        <div>
+          <%= link_to "View Family", @family, class: "btn btn-secondary" %>
+          <%= link_to "Cancel", @family, class: "btn btn-outline-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

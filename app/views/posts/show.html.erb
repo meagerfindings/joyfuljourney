@@ -1,16 +1,226 @@
-<h1><%= @post.title %></h1>
-
-<div id=post-details>
-  <i>by: <%= @post.user.name %></i>
-  <p><%= @post.body %></p>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <%= turbo_frame_tag "post_content" do %>
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-primary text-white border-0">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h1 class="h3 mb-2 text-white">
+                  <%= @post.title %>
+                  <% if @post.private? %>
+                    <span class="badge bg-light text-dark ms-2">🔒 Private</span>
+                  <% end %>
+                </h1>
+                <div class="d-flex align-items-center text-white-50">
+                  <span class="me-3">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <%= @post.user.name %>
+                  </span>
+                  <span>
+                    <i class="bi bi-calendar3 me-1"></i>
+                    <%= @post.created_at.strftime("%B %d, %Y") %>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="dropdown">
+                <button class="btn btn-outline-light btn-sm" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><%= link_to "✏️ Edit Memory", edit_post_path(@post), class: "dropdown-item", data: { turbo_frame: "_top" } %></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= link_to "🗑️ Delete Memory", post_path(@post), method: :delete, class: "dropdown-item text-danger", 
+                          confirm: "Are you sure you want to delete '#{@post.title}'?", 
+                          data: { turbo_method: :delete, turbo_confirm: "Delete this precious memory forever?" } %></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-body p-4">
+            <% if @post.user.family.present? %>
+              <div class="mb-3">
+                <span class="badge bg-info bg-opacity-10 text-info">
+                  <i class="bi bi-house-heart me-1"></i>
+                  <%= @post.user.family.name %> Family
+                </span>
+              </div>
+            <% end %>
+            
+            <% if @post.tagged_users.any? %>
+              <div class="mb-4">
+                <h6 class="text-muted mb-2">
+                  <i class="bi bi-people-fill me-1"></i>
+                  Tagged Family Members:
+                </h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <% @post.tagged_users.each do |tagged_user| %>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                      <i class="bi bi-person-heart me-1"></i>
+                      <%= tagged_user.name %><%= " (#{tagged_user.display_age})" if tagged_user.display_age %>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            
+            <div class="post-content">
+              <p class="lead"><%= simple_format(@post.body) %></p>
+            </div>
+            
+            <% if @post.photos.attached? %>
+              <div class="mt-4">
+                <h6 class="text-muted mb-3">
+                  <i class="bi bi-images me-1"></i>
+                  Photos (<%= @post.photos.count %>):
+                </h6>
+                <div class="row g-3">
+                  <% @post.photos.each_with_index do |photo, index| %>
+                    <div class="col-12 col-md-6 col-lg-4">
+                      <div class="position-relative">
+                        <%= link_to photo, target: "_blank", class: "d-block" do %>
+                          <%= image_tag photo, class: "img-fluid rounded shadow-sm", style: "cursor: zoom-in;" %>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @post.videos.attached? %>
+              <div class="mt-4">
+                <h6 class="text-muted mb-3">
+                  <i class="bi bi-camera-video me-1"></i>
+                  Videos (<%= @post.videos.count %>):
+                </h6>
+                <div class="row g-3">
+                  <% @post.videos.each do |video| %>
+                    <div class="col-12 col-lg-6">
+                      <video controls class="w-100 rounded shadow-sm" style="max-height: 400px;">
+                        <source src="<%= url_for(video) %>" type="<%= video.blob.content_type %>">
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @post.audio_recordings.attached? %>
+              <div class="mt-4">
+                <h6 class="text-muted mb-3">
+                  <i class="bi bi-mic me-1"></i>
+                  Audio Recordings (<%= @post.audio_recordings.count %>):
+                </h6>
+                <div class="d-flex flex-column gap-2">
+                  <% @post.audio_recordings.each_with_index do |audio, index| %>
+                    <div class="card border-0 bg-light">
+                      <div class="card-body p-3">
+                        <div class="d-flex align-items-center gap-3">
+                          <i class="bi bi-music-note-beamed text-primary fs-4"></i>
+                          <audio controls class="flex-grow-1">
+                            <source src="<%= url_for(audio) %>" type="<%= audio.blob.content_type %>">
+                            Your browser does not support the audio element.
+                          </audio>
+                        </div>
+                        <small class="text-muted mt-2 d-block">
+                          Recording #<%= index + 1 %> • <%= audio.blob.filename %>
+                        </small>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @post.milestones.any? %>
+              <div class="border-top pt-4 mt-4">
+                <h6 class="text-muted mb-3">
+                  <i class="bi bi-trophy me-1"></i>
+                  Related Milestones:
+                </h6>
+                <div class="row g-3">
+                  <% @post.milestones.select { |m| m.visible_to?(current_user) }.each do |milestone| %>
+                    <div class="col-md-6">
+                      <div class="card border-0 bg-success bg-opacity-5 h-100">
+                        <div class="card-body p-3">
+                          <div class="d-flex align-items-start">
+                            <div class="badge bg-success text-white me-2 mt-1">
+                              <i class="bi bi-trophy"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                              <h6 class="card-title mb-1">
+                                <%= link_to milestone.title, milestone, class: "text-decoration-none text-success fw-bold" %>
+                              </h6>
+                              <div class="small text-muted mb-2">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                <%= milestone.milestone_date.strftime("%b %d, %Y") %>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary ms-2">
+                                  <%= milestone.milestone_type.humanize %>
+                                </span>
+                              </div>
+                              <% if milestone.description.present? %>
+                                <p class="card-text small text-muted">
+                                  <%= truncate(milestone.description, length: 100) %>
+                                </p>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="card-footer bg-light border-0">
+            <div class="d-flex justify-content-between align-items-center">
+              <%= link_to '← Back to All Memories', posts_path, class: "btn btn-outline-secondary", data: { turbo_frame: "_top" } %>
+              
+              <div class="btn-group">
+                <%= link_to "✏️ Edit", edit_post_path(@post), class: "btn btn-primary", data: { turbo_frame: "_top" } %>
+                <%= link_to "📤 Share", "#", class: "btn btn-outline-primary", data: { controller: "memory", action: "click->memory#share", memory_title_value: @post.title, memory_url_value: request.original_url } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <%= turbo_frame_tag "related_memories", class: "mt-4" do %>
+        <% if @post.user.posts.count > 1 %>
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+              <h5 class="mb-0 text-muted">
+                <i class="bi bi-collection me-2"></i>
+                More memories from <%= @post.user.first_name || @post.user.username %>
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <% @post.user.posts.where.not(id: @post.id).limit(3).each do |related_post| %>
+                  <div class="col-md-4">
+                    <div class="card border-0 bg-light h-100">
+                      <div class="card-body p-3">
+                        <h6 class="card-title">
+                          <%= link_to related_post.title, related_post, class: "text-decoration-none" %>
+                        </h6>
+                        <p class="card-text small text-muted">
+                          <%= truncate(related_post.body, length: 80) %>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
 </div>
-
-<ul>
-  <li><%= link_to "Edit", edit_post_path(@post) %></li>
-  <li><%= link_to "Delete Post", post_path(@post), data: {
-                    turbo_method: :delete,
-                    turbo_confirm: "Are you sure you want to delete '#{@post.title}'?"
-                  } %></li>
-</ul>
-
-<%= link_to 'Back to Posts', '/posts' %>

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  let(:user) { User.create(first_name: "Amos", last_name: "Burton", birthdate: "July 4, 3315") }
+  let(:user) { User.create(first_name: 'Amos', last_name: 'Burton', birthdate: 'July 4, 3315') }
 
   describe 'GET #index' do
     it 'renders index' do
@@ -12,16 +13,16 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  describe "GET #show" do
-    it "renders show" do
+  describe 'GET #show' do
+    it 'renders show' do
       get :show, params: { id: user.to_param }
       expect(response).to be_successful
       expect(response).to render_template(:show)
     end
   end
 
-  describe "GET #new" do
-    it "renders new" do
+  describe 'GET #new' do
+    it 'renders new' do
       get :new
       expect(response).to be_successful
       expect(response).to render_template(:new)
@@ -44,20 +45,20 @@ RSpec.describe UsersController, type: :controller do
   describe 'POST #create' do
     context 'with valid parameters' do
       it 'creates a new user' do
-        post :create, params: { user: { first_name: "Amos", last_name: "Burton", birthdate: "July 4, 3315" } }
+        post :create, params: { user: { first_name: 'Amos', last_name: 'Burton', birthdate: 'July 4, 3315' } }
         expect(response).to redirect_to user_path(id: User.last)
       end
     end
 
     context 'with invalid parameters' do
       it 'does not create a user without first name' do
-        post :create, params: { user: { last_name: "Burton", birthdate: "July 4, 3315" } }
+        post :create, params: { user: { last_name: 'Burton', birthdate: 'July 4, 3315' } }
         expect(response).to have_http_status(422)
         expect(response).to render_template(:new)
       end
 
       it 'does not create a user without last name' do
-        post :create, params: { user: { first_name: "Amos", birthdate: "July 4, 3315" } }
+        post :create, params: { user: { first_name: 'Amos', birthdate: 'July 4, 3315' } }
         expect(response).to have_http_status(422)
         expect(response).to render_template(:new)
       end
@@ -66,15 +67,14 @@ RSpec.describe UsersController, type: :controller do
     context 'with an unclaimed user' do
       context 'without username' do
         it 'creates a new user' do
-          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: false } }
+          post :create, params: { user: { first_name: 'Amos', last_name: 'Burton', claimed: false } }
           expect(response).to redirect_to user_path(id: User.last)
           expect(User.last.username).to_not be_nil
         end
-
       end
       context 'without password' do
         it 'creates a new user' do
-          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: false } }
+          post :create, params: { user: { first_name: 'Amos', last_name: 'Burton', claimed: false } }
           expect(response).to redirect_to user_path(id: User.last)
         end
       end
@@ -82,27 +82,31 @@ RSpec.describe UsersController, type: :controller do
 
     context 'with a claimed user' do
       context 'with a username and password do'
-        it 'creates a new user and redirects to root path' do
-          username = "willramos"
+      it 'creates a new user and redirects to root path' do
+        username = 'willramos'
 
-          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: true, username: username, password: "pray to imitation gods" } }
+        post :create,
+             params: { user: { first_name: 'Amos', last_name: 'Burton', claimed: true, username:,
+                               password: 'pray to imitation gods' } }
 
-          expect(response).to redirect_to root_path
-          expect(User.last.username).to eq(username)
-        end
+        expect(response).to redirect_to root_path
+        expect(User.last.username).to eq(username)
+      end
 
       context 'without username' do
         it 'does not create a new user' do
-          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: true, password: "pray to imitation gods" } }
+          post :create,
+               params: { user: { first_name: 'Amos', last_name: 'Burton', claimed: true,
+                                 password: 'pray to imitation gods' } }
 
           expect(response).to have_http_status(422)
           expect(response).to render_template(:new)
         end
-
       end
       context 'without password' do
         it 'does not create a new user' do
-          post :create, params: { user: { first_name: "Amos", last_name: "Burton", claimed: true, username: "WillRAMOS" } }
+          post :create,
+               params: { user: { first_name: 'Amos', last_name: 'Burton', claimed: true, username: 'WillRAMOS' } }
 
           expect(response).to have_http_status(422)
           expect(response).to render_template(:new)
@@ -111,31 +115,31 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  describe "GET #edit" do
-    it "renders edit" do
+  describe 'GET #edit' do
+    it 'renders edit' do
       get :edit, params: { id: user.to_param }
       expect(response).to be_successful
       expect(response).to render_template(:edit)
     end
   end
 
-  describe "PUT #update" do
-    context "with valid parameters" do
-      let(:new_attributes) { { first_name: "Tim" } }
+  describe 'PUT #update' do
+    context 'with valid parameters' do
+      let(:new_attributes) { { first_name: 'Tim' } }
 
-      it "updates the requested user" do
+      it 'updates the requested user' do
         put :update, params: { id: user.to_param, user: new_attributes }
         user.reload
         expect(user.first_name).to eq(new_attributes[:first_name])
       end
 
-      it "redirects to the user" do
+      it 'redirects to the user' do
         put :update, params: { id: user.to_param, user: new_attributes }
         expect(response).to redirect_to(user)
       end
     end
 
-    context "with invalid parameters" do
+    context 'with invalid parameters' do
       it 'does not update the user' do
         put :update, params: { id: user.to_param, user: { first_name: '' } }
         expect(response).to have_http_status(422)
@@ -144,13 +148,13 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  describe "DELETE #destroy" do
+  describe 'DELETE #destroy' do
     before do
       user # forces the initial user to be loaded
-      User.create(first_name: "First", last_name: "Last")
+      User.create(first_name: 'First', last_name: 'Last')
     end
 
-    it "destroys the requested user" do
+    it 'destroys the requested user' do
       prior_user_count = User.all.count
 
       delete :destroy, params: { id: user.to_param }
@@ -159,7 +163,7 @@ RSpec.describe UsersController, type: :controller do
       expect(after_user_count).to eq(prior_user_count - 1)
     end
 
-    it "redirects to the users list" do
+    it 'redirects to the users list' do
       delete :destroy, params: { id: user.to_param }
       expect(response).to redirect_to(users_path)
     end

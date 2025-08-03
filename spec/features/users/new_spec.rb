@@ -1,26 +1,26 @@
 require 'rails_helper'
 
-RSpec.describe "New User Page", type: :feature do
+RSpec.describe 'New User Page', type: :feature do
   before(:each) do
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  it "allows the creation of a new user" do
+  it 'allows the creation of a new user' do
     new_user = {
-      first_name: "Joseph",
-      middle_name: "Unknown",
-      last_name: "Prusa",
-      birthdate: "1887-08-03",
-      nickname: "Printable"
+      first_name: 'Joseph',
+      middle_name: 'Unknown',
+      last_name: 'Prusa',
+      birthdate: '1887-08-03',
+      nickname: 'Printable'
     }
 
-    visit "/users/new"
+    visit '/users/new'
 
-    within(".header") do
-      expect(page).to have_content("New User")
+    within('.header') do
+      expect(page).to have_content('New User')
     end
 
-    within("#user-edit-details") do
+    within('#user-edit-details') do
       fill_in 'First name', with: new_user[:first_name]
       fill_in 'Middle name', with: new_user[:middle_name]
       fill_in 'Last name', with: new_user[:last_name]
@@ -30,7 +30,7 @@ RSpec.describe "New User Page", type: :feature do
 
     click_button 'Create User'
 
-    within("#user-details") do
+    within('#user-details') do
       expect(page).to have_content(new_user[:first_name])
       expect(page).to have_content(new_user[:middle_name])
       expect(page).to have_content(new_user[:last_name])
@@ -40,9 +40,9 @@ RSpec.describe "New User Page", type: :feature do
   end
 
   it 'displays error messages for empty fields' do
-    visit "/users/new"
+    visit '/users/new'
 
-    within("#user-edit-details") do
+    within('#user-edit-details') do
       fill_in 'First name', with: ''
       fill_in 'Last name', with: ''
     end

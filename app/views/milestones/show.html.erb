@@ -1,0 +1,162 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 milestone-detail-card">
+        <!-- Hero Header -->
+        <div class="card-header text-white position-relative overflow-hidden p-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <div class="milestone-icon mb-3">
+                <span class="display-3">
+                  <%= case @milestone.milestone_type_display.downcase
+                      when /birthday/ then "🎂"
+                      when /graduation/ then "🎓"
+                      when /wedding/ then "💒"
+                      when /anniversary/ then "💖"
+                      when /achievement/ then "🏆"
+                      when /first/ then "🌟"
+                      else "🎉"
+                      end %>
+                </span>
+              </div>
+              <h1 class="display-5 fw-bold text-white mb-3"><%= @milestone.title %></h1>
+              <div class="d-flex align-items-center text-white-50">
+                <i class="bi bi-calendar-event me-2"></i>
+                <span class="fs-5"><%= @milestone.milestone_date.strftime("%B %d, %Y") %></span>
+              </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <% if @milestone.is_private %>
+                <span class="badge bg-warning bg-opacity-20 text-warning fs-6 p-3">
+                  <i class="bi bi-lock-fill me-2"></i>
+                  Private Milestone
+                </span>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Decorative Background -->
+          <div class="position-absolute" style="top: -50px; right: -50px; font-size: 8rem; opacity: 0.05;">
+            <%= case @milestone.milestone_type_display.downcase
+                when /birthday/ then "🎂"
+                when /graduation/ then "🎓"
+                when /wedding/ then "💒"
+                when /anniversary/ then "💖"
+                when /achievement/ then "🏆"
+                when /first/ then "🌟"
+                else "🎉"
+                end %>
+          </div>
+        </div>
+
+        <div class="card-body p-5">
+          <!-- Milestone Type Badge -->
+          <div class="mb-4">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-4 py-2 fs-6">
+              <i class="bi bi-tag-fill me-2"></i>
+              <%= @milestone.milestone_type_display %>
+            </span>
+          </div>
+          
+          <!-- Description -->
+          <% if @milestone.description.present? %>
+            <div class="mb-4">
+              <h5 class="text-muted mb-3">
+                <i class="bi bi-chat-quote me-2"></i>
+                About This Milestone
+              </h5>
+              <div class="milestone-description p-4 bg-light rounded-3">
+                <%= simple_format(@milestone.description, class: "lead mb-0") %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Milestone Details -->
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="info-card p-4 bg-primary bg-opacity-5 rounded-3">
+                <h6 class="text-primary mb-2">
+                  <i class="bi bi-person-heart me-2"></i>
+                  For
+                </h6>
+                <div>
+                  <% case @milestone.milestoneable_type %>
+                  <% when 'User' %>
+                    <%= link_to @milestone.milestoneable, class: "text-decoration-none" do %>
+                      <span class="badge bg-light text-dark fs-6 p-2">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <%= @milestone.milestoneable.name %>
+                      </span>
+                    <% end %>
+                  <% when 'Family' %>
+                    <%= link_to @milestone.milestoneable, class: "text-decoration-none" do %>
+                      <span class="badge bg-info bg-opacity-10 text-info fs-6 p-2">
+                        <i class="bi bi-house-heart me-1"></i>
+                        <%= @milestone.milestoneable.name %> family
+                      </span>
+                    <% end %>
+                  <% when 'Post' %>
+                    <%= link_to @milestone.milestoneable, class: "text-decoration-none" do %>
+                      <span class="badge bg-success bg-opacity-10 text-success fs-6 p-2">
+                        <i class="bi bi-journal-text me-1"></i>
+                        "<%= @milestone.milestoneable.title %>"
+                      </span>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="info-card p-4 bg-secondary bg-opacity-5 rounded-3">
+                <h6 class="text-secondary mb-2">
+                  <i class="bi bi-person-plus me-2"></i>
+                  Created By
+                </h6>
+                <div>
+                  <span class="badge bg-light text-dark fs-6 p-2">
+                    <i class="bi bi-person-check me-1"></i>
+                    <%= @milestone.created_by_user.name %>
+                  </span>
+                  <br>
+                  <small class="text-muted mt-2 d-block">
+                    <%= @milestone.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="card-footer bg-light border-0 p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="btn-group">
+              <%= link_to "← Back to Milestones", milestones_path, class: "btn btn-outline-secondary" %>
+              <% if @milestone.milestoneable %>
+                <%= link_to "← Back to #{@milestone.milestoneable_type}", 
+                            polymorphic_path([@milestone.milestoneable, :milestones]), 
+                            class: "btn btn-outline-secondary" %>
+              <% end %>
+            </div>
+            
+            <div class="btn-group">
+              <%= link_to "📤 Share", "#", class: "btn btn-outline-primary",
+                  data: { controller: "memory", action: "click->memory#share", 
+                         memory_title_value: @milestone.title, 
+                         memory_url_value: request.original_url } %>
+              
+              <% if @milestone.created_by_user == current_user || manager_or_admin? %>
+                <%= link_to "✏️ Edit", edit_milestone_path(@milestone), class: "btn btn-primary" %>
+                <%= link_to "🗑️ Delete", milestone_path(@milestone), method: :delete, 
+                            confirm: "Are you sure you want to delete this precious milestone?", 
+                            class: "btn btn-outline-danger",
+                            data: { turbo_method: :delete, turbo_confirm: "Delete this milestone forever?" } %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

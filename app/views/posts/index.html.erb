@@ -1,17 +1,150 @@
 <% is_user_post_index = @user %>
 <% index_header_string = is_user_post_index ? "#{@user.name}'s Posts" : "All Posts" %>
 
-<h1><%= index_header_string %></h1>
+<div class="container py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4 fw-bold text-primary"><%= index_header_string %></h1>
+        <%= link_to "✨ Create New Memory", new_post_path, 
+            class: "btn btn-primary btn-lg", 
+            data: { turbo_frame: "_top" } %>
+      </div>
+      
+      <% unless is_user_post_index %>
+        <% if current_user&.family&.users&.any? %>
+          <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+              <h6 class="card-title mb-3">
+                <i class="bi bi-funnel me-1"></i>
+                Filter by Tagged Family Members
+              </h6>
+              <%= form_with url: posts_path, method: :get, local: true, class: "d-flex flex-wrap gap-2 align-items-end" do |form| %>
+                <div class="flex-grow-1">
+                  <%= form.select :tagged_user_id, 
+                      options_from_collection_for_select(current_user.family.users, :id, :name, params[:tagged_user_id]),
+                      { prompt: "All family members" },
+                      { class: "form-select", style: "min-width: 200px;" } %>
+                </div>
+                <div>
+                  <%= form.submit "Filter", class: "btn btn-outline-primary" %>
+                  <% if params[:tagged_user_id].present? %>
+                    <%= link_to "Clear", posts_path, class: "btn btn-outline-secondary" %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% if params[:tagged_user_id].present? %>
+                <% filtered_user = User.find(params[:tagged_user_id]) %>
+                <div class="mt-2">
+                  <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Showing posts tagged with <strong><%= filtered_user.name %></strong>
+                  </small>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+      
+      <%= turbo_frame_tag "new_post_modal" %>
+      
+      <div class="row g-4">
+        <% if @posts.any? %>
+          <% @posts.each do |post| %>
+            <div class="col-lg-6 col-xl-4">
+              <div class="card h-100 shadow-sm border-0 hover-card" data-controller="memory" data-action="mouseenter->memory#hoverIn mouseleave->memory#hoverOut">
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title text-primary fw-bold mb-0">
+                      <%= link_to post.title, post, class: "text-decoration-none", data: { turbo_frame: "_top" } %>
+                    </h5>
+                    <div class="dropdown">
+                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        ⋮
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><%= link_to "View", post, class: "dropdown-item", data: { turbo_frame: "_top" } %></li>
+                        <li><%= link_to "Edit", edit_post_path(post), class: "dropdown-item", data: { turbo_frame: "_top" } %></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><%= link_to "Delete", post, method: :delete, class: "dropdown-item text-danger", 
+                                confirm: "Delete this memory?", data: { turbo_method: :delete } %></li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <% if post.photos.attached? %>
+                    <div class="mb-3">
+                      <div class="row g-2">
+                        <% post.photos.first(4).each_with_index do |photo, index| %>
+                          <div class="col-6">
+                            <%= image_tag photo, class: "img-thumbnail", style: "height: 100px; width: 100%; object-fit: cover;" %>
+                          </div>
+                        <% end %>
+                      </div>
+                      <% if post.photos.count > 4 %>
+                        <small class="text-muted mt-1 d-block">
+                          <i class="bi bi-images me-1"></i>
+                          +<%= post.photos.count - 4 %> more photos
+                        </small>
+                      <% end %>
+                    </div>
+                  <% end %>
+                  
+                  <p class="card-text text-muted mb-3"><%= truncate(post.body, length: 120) %></p>
+                  
+                  <div class="mb-3">
+                    <small class="text-muted d-flex align-items-center">
+                      <span class="badge bg-light text-dark me-2">👤</span>
+                      <%= post.user.name %>
+                    </small>
+                  </div>
+                  
+                  <% if post.tagged_users.any? %>
+                    <div class="tagged-users">
+                      <small class="text-muted mb-2 d-block">Tagged Family:</small>
+                      <div class="d-flex flex-wrap gap-1">
+                        <% post.tagged_users.each do |tagged_user| %>
+                          <span class="badge bg-primary bg-opacity-10 text-primary">
+                            <%= tagged_user.name %><%= " (#{tagged_user.display_age})" if tagged_user.display_age %>
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 pt-0">
+                  <%= link_to "Read Full Memory →", post, 
+                      class: "btn btn-outline-primary btn-sm w-100", 
+                      data: { turbo_frame: "_top" } %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="col-12">
+            <div class="text-center py-5">
+              <div class="display-1 text-muted mb-3">📝</div>
+              <h3 class="text-muted">No memories yet</h3>
+              <p class="text-muted mb-4">Start creating beautiful family memories to share with everyone!</p>
+              <%= link_to "Create Your First Memory", new_post_path, 
+                  class: "btn btn-primary btn-lg", 
+                  data: { turbo_frame: "_top" } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
 
-<%= link_to "New Memory", new_post_path %>
-
-<ul>
-  <% @posts.each do |post| %>
-    <li id="post-<%= post.id %>">
-      <%= link_to post.title, post %>
-      <br/>
-      <p><%= post.body %></p>
-      <p>by: <%= post.user.name %></p>
-    </li>
-  <% end %>
-</ul>
+<style>
+  .hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+  }
+</style>

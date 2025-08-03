@@ -1,0 +1,28 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: joyful_journey_test
+    ports:
+      - "5433:5432"
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    command: bundle exec rails s -p 3001 -b '0.0.0.0'
+    volumes:
+      - .:/var/www/app
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      - RAILS_ENV=test
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-password}@db:5432/joyful_journey_test
+
+volumes:
+  postgres_test_data:

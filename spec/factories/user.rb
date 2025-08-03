@@ -2,15 +2,16 @@
 
 FactoryBot.define do
   factory :user do
-    first_name { "Will" }
-    last_name { "Ramos" }
+    first_name { 'Will' }
+    last_name { 'Ramos' }
   end
 
-  factory :claimed_user, class: "User" do
-    first_name { "Rick" }
-    last_name { "Grimes" }
+  factory :claimed_user, class: 'User' do
+    first_name { 'Rick' }
+    last_name { 'Grimes' }
     sequence(:username) { |n| "claimed_#{n}" }
-    password { "claimed123" }
+    password { 'claimed123' }
     claimed { true }
+    family
   end
 end
