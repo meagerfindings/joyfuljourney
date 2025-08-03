@@ -14,10 +14,12 @@ class User < ApplicationRecord
   has_and_belongs_to_many :tagged_posts, class_name: 'Post'
   has_many :milestones, as: :milestoneable, dependent: :destroy
   has_many :created_milestones, class_name: 'Milestone', foreign_key: 'created_by_user_id', dependent: :destroy
+  has_many :sent_family_invitations, class_name: 'FamilyInvitation', foreign_key: 'inviter_id', dependent: :destroy
   
   has_many :relationships, dependent: :destroy
   has_many :inverse_relationships, class_name: 'Relationship', foreign_key: 'related_user_id', dependent: :destroy
   has_many :related_users, through: :relationships, source: :related_user
+  
   has_secure_password
 
   enum role: %w[default manager admin]
