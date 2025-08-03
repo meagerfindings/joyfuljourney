@@ -18,5 +18,11 @@ module JoyfulJourney
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # Serve PWA files from public directory
+    config.public_file_server.enabled = true
+    
+    # Add PWA assets to precompile list
+    config.assets.precompile += %w[pwa_installer.js]
   end
 end
