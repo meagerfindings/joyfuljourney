@@ -23,6 +23,13 @@
       </ul>
       
       <ul class="navbar-nav">
+        <!-- PWA Install Button -->
+        <li class="nav-item me-2">
+          <button id="install-app-button" class="btn btn-outline-light" style="display: none;">
+            <i class="bi bi-download"></i> Install App
+          </button>
+        </li>
+        
         <% if current_user %>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
