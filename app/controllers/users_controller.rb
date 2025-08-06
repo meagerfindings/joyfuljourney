@@ -50,12 +50,33 @@ class UsersController < ApplicationController
     user = User.find_by(username: params[:username])
 
     if user&.authenticate(params[:password])
-      session[:user_id] = user.id
-      flash[:success] = "Welcome, #{user.name}!"
-      redirect_to root_path
+      # Generate new token if user doesn't have one
+      user.regenerate_authentication_token unless user.authentication_token
+      
+      if turbo_native_app?
+        # Return JSON with token for mobile apps
+        render json: { 
+          token: user.authentication_token,
+          user: {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            role: user.role
+          }
+        }
+      else
+        # Standard web login
+        session[:user_id] = user.id
+        flash[:success] = "Welcome, #{user.name}!"
+        redirect_to root_path
+      end
     else
-      flash[:error] = 'Sorry, your username or password did not match what we have on record.'
-      render :login_form
+      if turbo_native_app?
+        render json: { error: 'Invalid username or password' }, status: :unauthorized
+      else
+        flash[:error] = 'Sorry, your username or password did not match what we have on record.'
+        render :login_form
+      end
     end
   end
 

@@ -1,8 +1,16 @@
 class ApplicationController < ActionController::Base
-  helper_method :current_user, :logged_in?, :require_login, :admin?, :manager_or_admin?
+  helper_method :current_user, :logged_in?, :require_login, :admin?, :manager_or_admin?, 
+                :turbo_native_app?, :turbo_native_ios?, :turbo_native_android?
 
+  # Support both session and token authentication
   def current_user
-    @_current_user ||= User.find(session[:user_id]) if session[:user_id]
+    @_current_user ||= begin
+      if session[:user_id]
+        User.find(session[:user_id])
+      elsif request.headers['Authorization'].present?
+        authenticate_with_token
+      end
+    end
   end
 
   def logged_in?
@@ -55,5 +63,25 @@ class ApplicationController < ActionController::Base
       flash[:error] = 'You can only access posts from your family members.'
       redirect_to root_path
     end
+  end
+
+  # Turbo Native helpers
+  def turbo_native_app?
+    request.user_agent.to_s.include?("Turbo Native")
+  end
+
+  def turbo_native_ios?
+    turbo_native_app? && request.user_agent.to_s.include?("iOS")
+  end
+
+  def turbo_native_android?
+    turbo_native_app? && request.user_agent.to_s.include?("Android")
+  end
+
+  private
+
+  def authenticate_with_token
+    token = request.headers['Authorization'].to_s.split(' ').last
+    User.find_by(authentication_token: token) if token.present?
   end
 end

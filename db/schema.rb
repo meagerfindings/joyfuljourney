@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_06_143237) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_06_150036) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -306,6 +306,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_143237) do
     t.boolean "claimed", default: false
     t.integer "role", default: 0
     t.bigint "family_id"
+    t.string "authentication_token"
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["family_id"], name: "index_users_on_family_id"
   end
 

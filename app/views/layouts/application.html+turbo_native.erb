@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JoyfulJourney</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "turbo", type: "module" %>
+    <%= javascript_include_tag "turbo_native", type: "module" %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+      /* iOS safe area support */
+      .safe-area-top {
+        padding-top: env(safe-area-inset-top);
+      }
+      .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      
+      /* Hide native navigation elements */
+      .native-hidden {
+        display: none !important;
+      }
+      
+      /* Adjust for native tab bar */
+      body.turbo-native {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    </style>
+  </head>
+
+  <body class="bg-light turbo-native" data-turbo-permanent>
+    <!-- Native apps provide their own navigation -->
+    <% unless turbo_native_app? %>
+      <% if request.path != root_path %>
+        <%= render "navbar" %>
+      <% end %>
+    <% end %>
+    
+    <!-- Flash messages for native -->
+    <div id="flash-messages" data-turbo-permanent>
+      <% flash.each do |name, msg| %>
+        <div class="alert alert-<%= name == 'notice' ? 'success' : 'danger' %> alert-dismissible fade show m-3" 
+             role="alert" 
+             data-turbo-temporary
+             data-bridge-component="flash">
+          <%= msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+    </div>
+    
+    <main class="container-fluid safe-area-top safe-area-bottom">
+      <%= yield %>
+    </main>
+    
+    <!-- Bridge component placeholders -->
+    <div id="bridge-components" data-turbo-permanent>
+      <div data-bridge-component="menu"></div>
+      <div data-bridge-component="form"></div>
+      <div data-bridge-component="camera"></div>
+      <div data-bridge-component="share"></div>
+    </div>
+  </body>
+</html>

@@ -22,6 +22,9 @@ class User < ApplicationRecord
 
   enum role: %w[default manager admin]
 
+  # Token authentication for mobile apps
+  before_create :generate_authentication_token
+
   def name
     "#{first_name} #{last_name}"
   end
@@ -86,6 +89,12 @@ class User < ApplicationRecord
     relationship_with(other_user)&.relationship_type
   end
 
+  # Generate new authentication token
+  def regenerate_authentication_token
+    self.authentication_token = generate_token
+    save
+  end
+
   private
 
   # https://stackoverflow.com/a/34391252
@@ -103,5 +112,16 @@ class User < ApplicationRecord
 
   def downcase_username
     self.username = username.downcase if username.present?
+  end
+
+  def generate_authentication_token
+    self.authentication_token = generate_token
+  end
+
+  def generate_token
+    loop do
+      token = SecureRandom.hex(32)
+      break token unless User.exists?(authentication_token: token)
+    end
   end
 end

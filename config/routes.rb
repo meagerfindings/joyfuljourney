@@ -3,6 +3,18 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root 'welcome#index'
+  
+  # API routes for mobile apps
+  namespace :api do
+    namespace :v1 do
+      post 'login', to: 'sessions#create'
+      delete 'logout', to: 'sessions#destroy'
+    end
+  end
+  
+  # Turbo Native path configuration
+  get 'turbo/ios_path_configuration', to: 'turbo#ios_path_configuration'
+  get 'turbo/android_path_configuration', to: 'turbo#android_path_configuration'
 
   resources :posts
   resources :families
