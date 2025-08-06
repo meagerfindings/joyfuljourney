@@ -7,6 +7,8 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: joyful_journey_development
+    ports:
+      - "5433:5432"
   web:
     build:
       context: .
