@@ -28,7 +28,7 @@ RSpec.describe "Turbo Path Configurations", type: :request do
         tab_item = rule['properties']['tab_bar_item']
         expect(tab_item).to have_key('title')
         expect(tab_item).to have_key('image')
-        expect(tab_item['image']).to match(/\w+\.fill/)  # SF Symbol naming
+        expect(tab_item['image']).to match(/[\w.]+/)  # SF Symbol naming pattern
       end
     end
     

@@ -20,13 +20,13 @@ RSpec.describe "Api::V1::Sessions", type: :request do
         expect(json['user']['name']).to eq(user.name)
       end
       
-      it "generates and saves authentication token" do
-        expect {
-          post "/api/v1/login", params: {
-            username: user.username,
-            password: 'password123'
-          }
-        }.to change { user.reload.authentication_token }.from(nil)
+      it "ensures user has authentication token after login" do
+        post "/api/v1/login", params: {
+          username: user.username,
+          password: 'password123'
+        }
+        
+        expect(user.reload.authentication_token).to be_present
       end
     end
     

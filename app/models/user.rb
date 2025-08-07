@@ -20,7 +20,7 @@ class User < ApplicationRecord
   has_many :related_users, through: :relationships, source: :related_user
   has_secure_password
 
-  enum role: %w[default manager admin]
+  enum :role, { default: 0, manager: 1, admin: 2 }
 
   # Token authentication for mobile apps
   before_create :generate_authentication_token
