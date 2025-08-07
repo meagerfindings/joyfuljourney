@@ -34,7 +34,12 @@
     </style>
   </head>
 
-  <body class="bg-light turbo-native" data-turbo-permanent>
+  <body class="bg-light turbo-native" data-turbo-permanent <%= "data-current-user='#{@current_user_json}'" if @current_user_json %>>
+    <!-- Current user meta for bridge components -->
+    <% if @current_user_json %>
+      <meta name="current-user-data" content="<%= @current_user_json %>">
+    <% end %>
+    
     <!-- Native apps provide their own navigation -->
     <% unless turbo_native_app? %>
       <% if request.path != root_path %>

@@ -2,16 +2,30 @@ class TurboController < ApplicationController
   skip_before_action :verify_authenticity_token
   
   def ios_path_configuration
-    render json: path_configuration_json(:ios)
+    render json: load_path_configuration(:ios)
   end
   
   def android_path_configuration
-    render json: path_configuration_json(:android)
+    render json: load_path_configuration(:android)
   end
   
   private
   
-  def path_configuration_json(platform)
+  def load_path_configuration(platform)
+    file_path = Rails.root.join("config", "turbo", "#{platform}_path_configuration.json")
+    
+    if File.exist?(file_path)
+      JSON.parse(File.read(file_path))
+    else
+      # Fallback configuration if file doesn't exist
+      default_path_configuration
+    end
+  rescue JSON::ParserError => e
+    Rails.logger.error "Error parsing path configuration for #{platform}: #{e.message}"
+    default_path_configuration
+  end
+  
+  def default_path_configuration
     {
       settings: {
         pull_to_refresh_enabled: true,
@@ -19,66 +33,10 @@ class TurboController < ApplicationController
       },
       rules: [
         {
-          patterns: ["/login", "/users/new"],
+          patterns: [".*"],
           properties: {
-            presentation: "modal",
-            pull_to_refresh_enabled: false
-          }
-        },
-        {
-          patterns: ["/posts/new", "/posts/*/edit"],
-          properties: {
-            presentation: "modal",
-            pull_to_refresh_enabled: false
-          }
-        },
-        {
-          patterns: ["/users/*/edit"],
-          properties: {
-            presentation: "modal"
-          }
-        },
-        {
-          patterns: ["/families/new", "/families/*/edit"],
-          properties: {
-            presentation: "modal"
-          }
-        },
-        {
-          patterns: ["/milestones/new", "/milestones/*/edit"],
-          properties: {
-            presentation: "modal"
-          }
-        },
-        {
-          patterns: ["/"],
-          properties: {
-            presentation: "default",
-            pull_to_refresh_enabled: true,
-            tab: "home"
-          }
-        },
-        {
-          patterns: ["/posts"],
-          properties: {
-            presentation: "default",
-            pull_to_refresh_enabled: true,
-            tab: "posts"
-          }
-        },
-        {
-          patterns: ["/timeline"],
-          properties: {
-            presentation: "default",
-            pull_to_refresh_enabled: true,
-            tab: "timeline"
-          }
-        },
-        {
-          patterns: ["/users/*"],
-          properties: {
-            presentation: "default",
-            tab: "profile"
+            presentation: "push",
+            pull_to_refresh_enabled: true
           }
         }
       ]

@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   helper_method :current_user, :logged_in?, :require_login, :admin?, :manager_or_admin?, 
-                :turbo_native_app?, :turbo_native_ios?, :turbo_native_android?
+                :turbo_native_app?, :turbo_native_ios?, :turbo_native_android?, :current_user_json
+  
+  before_action :set_current_user_for_javascript
 
   # Support both session and token authentication
   def current_user
@@ -83,5 +85,22 @@ class ApplicationController < ActionController::Base
   def authenticate_with_token
     token = request.headers['Authorization'].to_s.split(' ').last
     User.find_by(authentication_token: token) if token.present?
+  end
+  
+  def set_current_user_for_javascript
+    @current_user_json = current_user_json if logged_in?
+  end
+  
+  def current_user_json
+    return nil unless current_user
+    
+    {
+      id: current_user.id,
+      username: current_user.username,
+      first_name: current_user.first_name,
+      last_name: current_user.last_name,
+      name: current_user.name,
+      role: current_user.role
+    }.to_json
   end
 end

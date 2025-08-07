@@ -1,0 +1,181 @@
+{
+  "settings": {
+    "pull_to_refresh_enabled": true,
+    "show_bars_on_scroll": true,
+    "page_refresh_delay": 500
+  },
+  "rules": [
+    {
+      "patterns": [
+        "/login",
+        "/users/new"
+      ],
+      "properties": {
+        "presentation": "modal",
+        "pull_to_refresh_enabled": false,
+        "title": "Account"
+      }
+    },
+    {
+      "patterns": [
+        "/posts/new",
+        "/posts/.*/edit"
+      ],
+      "properties": {
+        "presentation": "modal",
+        "pull_to_refresh_enabled": false,
+        "title": "Post",
+        "modal_style": "form_sheet"
+      }
+    },
+    {
+      "patterns": [
+        "/users/.*/edit"
+      ],
+      "properties": {
+        "presentation": "modal",
+        "pull_to_refresh_enabled": false,
+        "title": "Edit Profile",
+        "modal_style": "form_sheet"
+      }
+    },
+    {
+      "patterns": [
+        "/families/new",
+        "/families/.*/edit"
+      ],
+      "properties": {
+        "presentation": "modal",
+        "pull_to_refresh_enabled": false,
+        "title": "Family",
+        "modal_style": "form_sheet"
+      }
+    },
+    {
+      "patterns": [
+        "/milestones/new",
+        "/milestones/.*/edit"
+      ],
+      "properties": {
+        "presentation": "modal",
+        "pull_to_refresh_enabled": false,
+        "title": "Milestone",
+        "modal_style": "form_sheet"
+      }
+    },
+    {
+      "patterns": [
+        "/relationships/new"
+      ],
+      "properties": {
+        "presentation": "modal",
+        "pull_to_refresh_enabled": false,
+        "title": "Add Relationship",
+        "modal_style": "form_sheet"
+      }
+    },
+    {
+      "patterns": [
+        "/"
+      ],
+      "properties": {
+        "presentation": "replace",
+        "pull_to_refresh_enabled": true,
+        "tab_bar_item": {
+          "title": "Home",
+          "image": "house.fill",
+          "index": 0
+        }
+      }
+    },
+    {
+      "patterns": [
+        "/posts",
+        "/posts/\\d+"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": true,
+        "tab_bar_item": {
+          "title": "Posts",
+          "image": "square.and.pencil",
+          "index": 1
+        }
+      }
+    },
+    {
+      "patterns": [
+        "/timeline",
+        "/timeline/truncated"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": true,
+        "tab_bar_item": {
+          "title": "Timeline",
+          "image": "clock.fill",
+          "index": 2
+        }
+      }
+    },
+    {
+      "patterns": [
+        "/families",
+        "/families/\\d+"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": true,
+        "tab_bar_item": {
+          "title": "Family",
+          "image": "person.3.fill",
+          "index": 3
+        }
+      }
+    },
+    {
+      "patterns": [
+        "/users/\\d+"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": false,
+        "tab_bar_item": {
+          "title": "Profile",
+          "image": "person.crop.circle.fill",
+          "index": 4
+        }
+      }
+    },
+    {
+      "patterns": [
+        "/users",
+        "/relationships"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": true
+      }
+    },
+    {
+      "patterns": [
+        "/milestones",
+        "/milestones/\\d+"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": true,
+        "title": "Milestones"
+      }
+    },
+    {
+      "patterns": [
+        ".*"
+      ],
+      "properties": {
+        "presentation": "push",
+        "pull_to_refresh_enabled": true
+      }
+    }
+  ]
+}
